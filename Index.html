@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Raghav's Game Hub</title>
+    <link rel="icon" type="image/png" href="/icon.png">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        .suggestion-box {
+    width: min(90%, 600px);
+    margin: 40px auto 50px;
+}
+
+
+#suggestionTrigger {
+    width: 100%;
+    padding: 14px 20px;
+
+    border: 1px solid #168cff;
+    border-radius: 14px;
+
+    background: #5b89ec;
+    color: white;
+    box-shadow: 0 0 30px grey;
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* Hidden until clicked */
+
+#suggestionForm {
+    display: none;
+}
+
+
+/* Expanded suggestion box */
+
+.suggestion-box.open #suggestionForm {
+    display: block;
+
+    margin-top: 12px;
+    padding: 18px;
+
+    border: 1px solid #168cff;
+    border-radius: 16px;
+
+    background: rgba(5, 20, 55, 0.95);
+
+    box-shadow: 0 0 20px rgba(0, 100, 255, 0.2);
+}
+
+
+/* Text area */
+
+#suggestionText {
+    display: block;
+
+    width: 100%;
+    min-height: 130px;
+    font-family: "comic sans ms";
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #777;
+    border-radius: 12px;
+
+    background: #d3d3d3;
+    color: #111;
+
+    font-size: 25px;
+
+    resize: vertical;
+}
+
+
+/* BUTTON AREA */
+
+.suggestion-buttons {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-top: 18px;
+}
+
+
+/* Buttons */
+
+.suggestion-buttons button {
+    padding: 10px 20px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* Cancel */
+
+#cancelSuggestion {
+    background: #777;
+    color: white;
+    border: none;
+}
+
+
+/* Submit */
+
+#suggestionForm button[type="submit"] {
+    background: white;
+    color: #111;
+    border: none;
+}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+
+            background:
+                radial-gradient(circle at 15% 20%, #193f9b 0%, transparent 25%),
+                radial-gradient(circle at 85% 75%, #451574 0%, transparent 25%),
+                linear-gradient(135deg, #020617, #071442, #050b24);
+
+            overflow-x: hidden;
+        }
+
+
+        /* ================================
+           ANIMATED STARS
+        ================================= */
+
+        .stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+
+            background-image:
+                radial-gradient(2px 2px at 10% 20%, white, transparent),
+                radial-gradient(2px 2px at 25% 70%, white, transparent),
+                radial-gradient(1px 1px at 40% 35%, white, transparent),
+                radial-gradient(2px 2px at 55% 80%, white, transparent),
+                radial-gradient(1px 1px at 70% 15%, white, transparent),
+                radial-gradient(2px 2px at 85% 50%, white, transparent),
+                radial-gradient(1px 1px at 95% 85%, white, transparent);
+
+            background-size: 300px 300px;
+
+            animation: starsMove 25s linear infinite;
+        }
+
+        @keyframes starsMove {
+
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(300px);
+            }
+        }
+
+
+        /* ================================
+           HEADER
+        ================================= */
+
+        header {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 55px 20px 20px;
+        }
+
+        .logo {
+            font-family: "Cooper Black", Georgia, serif;
+
+            font-size: clamp(42px, 7vw, 82px);
+
+            color: #1748c7;
+
+            text-shadow:
+                0 0 8px #3d78ff,
+                0 0 20px #2458dc,
+                0 0 40px #123b9e;
+
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.035);
+            }
+        }
+
+        .subtitle {
+            margin-top: 15px;
+            color: #c4d1ff;
+            font-size: 20px;
+        }
+
+
+        /* ================================
+           NAVIGATION
+        ================================= */
+
+        nav {
+            position: relative;
+            z-index: 3;
+
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+
+            margin: 20px auto 30px;
+        }
+
+        nav button {
+            border: 1px solid #315cc4;
+
+            background: rgba(13, 30, 76, 0.9);
+
+            color: white;
+
+            padding: 11px 20px;
+
+            border-radius: 25px;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        nav button:hover {
+            background: #214db2;
+            transform: translateY(-3px);
+        }
+
+
+        /* ================================
+           MAIN
+        ================================= */
+
+        main {
+            position: relative;
+            z-index: 2;
+        }
+
+
+        /* ================================
+           SEARCH
+        ================================= */
+
+        .search-area {
+            display: flex;
+            justify-content: center;
+
+            padding: 0 20px;
+            margin-bottom: 35px;
+        }
+
+        #search {
+            width: min(650px, 100%);
+
+            padding: 17px 24px;
+
+            border-radius: 35px;
+
+            border: 2px solid #3268dc;
+
+            outline: none;
+
+            background: rgba(7, 19, 58, 0.95);
+
+            color: white;
+
+            font-size: 18px;
+        }
+
+        #search::placeholder {
+            color: #94a6d6;
+        }
+
+
+        /* ================================
+           FEATURED
+        ================================= */
+
+        .featured {
+            width: min(1100px, 92%);
+
+            margin: 0 auto 50px;
+
+            padding: 35px;
+
+            border-radius: 28px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(23, 58, 139, 0.8),
+                    rgba(31, 13, 75, 0.85)
+                );
+
+            border: 2px solid #315ec8;
+
+            box-shadow: 0 15px 50px rgba(0,0,0,0.45);
+        }
+
+        .featured-label {
+            display: inline-block;
+
+            background: #ff7518;
+
+            padding: 7px 17px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+
+            margin-bottom: 15px;
+        }
+
+        .featured-icon {
+            font-size: 75px;
+
+            margin-bottom: 10px;
+
+            animation: floatRocket 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatRocket {
+
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-10px);
+            }
+        }
+
+
+        /* ================================
+           GAME GRID
+        ================================= */
+
+        .games {
+            width: min(1200px, 92%);
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(260px, 1fr));
+
+            gap: 28px;
+
+            padding-bottom: 60px;
+        }
+
+
+        /* ================================
+           GAME CARD
+        ================================= */
+
+        .game-card {
+            background: rgba(12, 27, 70, 0.94);
+
+            border: 2px solid #244fae;
+
+            border-radius: 22px;
+
+            padding: 28px;
+
+            text-align: center;
+
+            box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+
+            transition: 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+
+            border-color: #5683ee;
+
+            box-shadow:
+                0 18px 45px rgba(38,100,255,0.4);
+        }
+
+        .game-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .game-card h2 {
+            margin-bottom: 12px;
+        }
+
+        .game-card p {
+            color: #b8c7eb;
+
+            line-height: 1.5;
+
+            min-height: 48px;
+
+            margin-bottom: 22px;
+        }
+
+
+        /* ================================
+           BUTTONS
+        ================================= */
+
+        .play-button,
+        .owner-button,
+        .danger-button,
+        .edit-button,
+        .back-button {
+
+            border: none;
+
+            padding: 12px 22px;
+
+            border-radius: 25px;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        .play-button {
+            background: #ff7518;
+        }
+
+        .play-button:hover {
+            background: #ff963d;
+            transform: translateY(-3px) scale(1.04);
+        }
+
+        .owner-button {
+            background: #5636c9;
+        }
+
+        .owner-button:hover {
+            background: #714ff0;
+            transform: translateY(-3px);
+        }
+
+        .danger-button {
+            background: #d62d3a;
+        }
+
+        .danger-button:hover {
+            background: #f13f4d;
+        }
+
+        .edit-button {
+            background: #1769aa;
+        }
+
+        .edit-button:hover {
+            background: #2586d1;
+        }
+
+        .back-button {
+            background: #214db2;
+        }
+
+        .back-button:hover {
+            background: #3268dc;
+        }
+
+
+        /* ================================
+           OWNER PANEL
+        ================================= */
+
+        #ownerPanel {
+            display: none;
+
+            position: relative;
+            z-index: 4;
+
+            width: min(1100px, 92%);
+
+            margin: 0 auto 45px;
+
+            padding: 30px;
+
+            border-radius: 25px;
+
+            background: rgba(12, 25, 66, 0.98);
+
+            border: 2px solid #6549df;
+
+            box-shadow: 0 15px 50px rgba(0,0,0,0.45);
+        }
+
+        .owner-title {
+            text-align: center;
+            margin-bottom: 25px;
+
+            color: #b9aaff;
+        }
+
+        .owner-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .owner-games {
+            display: grid;
+            gap: 12px;
+        }
+
+        .owner-game-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: rgba(255,255,255,0.05);
+
+            border: 1px solid #293f7a;
+        }
+
+        .owner-game-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+
+        /* ================================
+           MODAL
+        ================================= */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 100;
+
+            background: rgba(0,0,0,0.75);
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .modal-box {
+            width: min(500px, 100%);
+
+            background:
+                linear-gradient(145deg, #101f50, #080e27);
+
+            border: 2px solid #426be0;
+
+            border-radius: 22px;
+
+            padding: 30px;
+
+            box-shadow: 0 20px 70px rgba(0,0,0,0.7);
+        }
+
+        .modal-box h2 {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .modal-box label {
+            display: block;
+
+            margin-top: 13px;
+            margin-bottom: 6px;
+
+            color: #b8c7eb;
+        }
+
+        .modal-box input,
+        .modal-box textarea,
+        .modal-box select {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border-radius: 10px;
+
+            border: 1px solid #3b5ca8;
+
+            background: #050b22;
+
+            color: white;
+
+            outline: none;
+
+            font-size: 15px;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .modal-buttons {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 22px;
+        }
+
+        .close-button {
+            background: #444f6e;
+            border: none;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            color: #ff9d9d;
+            min-height: 20px;
+        }
+
+
+        /* ================================
+           GAME PLAYER
+        ================================= */
+
+        #gamePlayer {
+            display: none;
+
+            position: relative;
+            z-index: 5;
+
+            width: 94%;
+
+            max-width: 1300px;
+
+            margin: 20px auto 60px;
+
+            background: rgba(4,12,38,0.98);
+
+            border: 2px solid #315ec8;
+
+            border-radius: 22px;
+
+            padding: 20px;
+        }
+
+        .player-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            margin-bottom: 18px;
+        }
+
+        .player-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .new-tab {
+            display: inline-block;
+
+            padding: 12px 20px;
+
+            border-radius: 25px;
+
+            background: rgba(255,255,255,0.1);
+
+            color: white;
+
+            text-decoration: none;
+
+            border: 1px solid #566ca7;
+        }
+
+        .game-frame-container {
+            width: 100%;
+
+            height: 70vh;
+
+            min-height: 450px;
+
+            border-radius: 15px;
+
+            overflow: hidden;
+
+            background: black;
+        }
+
+        #gameFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+
+        /* ================================
+           FOOTER
+        ================================= */
+
+        footer {
+            position: relative;
+
+            z-index: 2;
+
+            text-align: center;
+
+            padding: 30px 20px;
+
+            border-top: 1px solid #1d3470;
+
+            color: #8fa4d8;
+        }
+
+
+        /* ================================
+           MOBILE
+        ================================= */
+
+        @media(max-width:600px) {
+
+            .logo {
+                font-size: 42px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .featured {
+                padding: 25px 18px;
+            }
+
+            .games {
+                grid-template-columns: 1fr;
+            }
+
+            .owner-game-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .game-frame-container {
+                height: 65vh;
+                min-height: 400px;
+            }
+        }
+
+        #suggestionName {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            font-family: "comic sans ms";
+            background: #d3d3d3;
+            color: #111;
+            font-weight: bold;
+            border: 1px solid #777;
+            border-radius: 12px;
+
+            font-size: 25px;
+            outline: none;
+        }
+
+        #suggestionName:focus {
+            border-color: #168cff;
+            box-shadow: 0 0 10px rgba(0, 140, 255, 0.3);
+        }
+
+        #suggestionMessage {
+            text-align: center;
+            color: #ffffff;
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        #suggestionMessage:empty {
+            display: none;
+        }
+
+        #suggestionMessage:not(:empty) {
+            background: #123d32;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="stars"></div>
+
+
+<!-- ================================
+     HEADER
+================================= -->
+
+<header>
+
+    <h1 class="logo">
+        RAGHAV'S GAME HUB
+    </h1>
+
+    <p class="subtitle">
+        🚀 One place. All my games. Endless fun! 🎮
+    </p>
+
+</header>
+
+
+<!-- ================================
+     NAVIGATION
+================================= -->
+
+<nav>
+
+    <button onclick="showHome()">
+        🏠 HOME
+    </button>
+
+    <button onclick="scrollToGames()">
+        🎮 GAMES
+    </button>
+
+    <button onclick="scrollToFeatured()">
+        ⭐ FEATURED
+    </button>
+
+    <button
+        id="ownerLoginButton"
+        class="owner-button"
+        onclick="openLogin()"
+    >
+        👑 OWNER LOGIN
+    </button>
+
+</nav>
+
+
+<!-- ================================
+     HOME
+================================= -->
+
+<main id="home">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-area">
+
+        <input
+            id="search"
+            type="text"
+            placeholder="🔍 Search your games..."
+            oninput="searchGames()"
+        >
+
+    </div>
+
+
+    <!-- FEATURED -->
+
+    <section
+        class="featured"
+        id="featured"
+    >
+
+        <div class="featured-label">
+            ⭐ FEATURED GAME
+        </div>
+
+        <div class="featured-icon">
+            🚀
+        </div>
+
+        <h2>
+            Space Shooter
+        </h2>
+
+        <p style="margin:15px auto 25px;max-width:650px;color:#c4d2f7;">
+            Enter the galaxy, take control of your spaceship
+            and survive the ultimate space battle!
+        </p>
+
+        <button
+            class="play-button"
+            onclick="openGame(
+                'Space Shooter',
+                'https://space-shooter-game-dlr3.bolt.host/'
+            )"
+        >
+            🚀 PLAY SPACE SHOOTER
+        </button>
+
+    </section>
+
+
+    <!-- OWNER PANEL -->
+
+    <section id="ownerPanel">
+
+        <h2 class="owner-title">
+            👑 OWNER DASHBOARD
+        </h2>
+
+        <div class="owner-actions">
+
+            <button
+                class="play-button"
+                onclick="openAddGame()"
+            >
+                ➕ ADD GAME
+            </button>
+
+            <button
+                class="danger-button"
+                onclick="logout()"
+            >
+                🚪 LOG OUT
+            </button>
+
+        </div>
+
+        <div
+            id="ownerGames"
+            class="owner-games"
+        ></div>
+
+    </section>
+
+
+    <!-- GAMES -->
+
+    <section
+        class="games"
+        id="games"
+    ></section>
+
+
+    <div
+        id="noResults"
+        style="display:none;text-align:center;padding:50px;color:#9eafd8;font-size:20px;"
+    >
+        😕 No games found.
+    </div>
+
+
+</main>
+
+
+<!-- ================================
+     GAME PLAYER
+================================= -->
+
+<section id="gamePlayer">
+
+    <div class="player-top">
+
+        <h2 id="playerTitle">
+            🎮 Playing Game
+        </h2>
+
+        <div class="player-buttons">
+
+            <button
+                class="back-button"
+                onclick="closeGame()"
+            >
+                ⬅ BACK TO GAMES
+            </button>
+
+            <a
+                id="newTabButton"
+                class="new-tab"
+                href="#"
+                target="_blank"
+            >
+                🔗 OPEN IN NEW TAB
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="game-frame-container">
+
+        <iframe
+            id="gameFrame"
+            title="Game"
+            allowfullscreen
+        ></iframe>
+
+    </div>
+
+</section>
+
+
+<!-- ================================
+     LOGIN MODAL
+================================= -->
+
+<div
+    class="modal"
+    id="loginModal"
+>
+
+    <div class="modal-box">
+
+        <h2>
+            👑 OWNER LOGIN
+        </h2>
+
+        <label>
+            Email
+        </label>
+
+        <input
+            id="loginEmail"
+            type="email"
+            placeholder="Your owner email"
+        >
+
+        <label>
+            Password
+        </label>
+
+        <input
+            id="loginPassword"
+            type="password"
+            placeholder="Your password"
+        >
+
+        <div class="modal-buttons">
+
+            <button
+                class="owner-button"
+                onclick="login()"
+            >
+                🔐 LOGIN
+            </button>
+
+            <button
+                class="close-button"
+                onclick="closeLogin()"
+            >
+                CANCEL
+            </button>
+
+        </div>
+
+        <div
+            id="loginMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<!-- ================================
+     ADD / EDIT GAME MODAL
+================================= -->
+
+<div
+    class="modal"
+    id="gameModal"
+>
+
+    <div class="modal-box">
+
+        <h2 id="gameModalTitle">
+            ➕ ADD GAME
+        </h2>
+
+        <label>
+            Game Name
+        </label>
+
+        <input
+            id="gameName"
+            type="text"
+            placeholder="Example: Galaxy Defender"
+        >
+
+        <label>
+            Description
+        </label>
+
+        <textarea
+            id="gameDescription"
+            placeholder="Describe your game..."
+        ></textarea>
+
+        <label>
+            Game URL
+        </label>
+
+        <input
+            id="gameURL"
+            type="url"
+            placeholder="https://your-game-site.com/"
+        >
+
+        <label>
+            Icon / Emoji
+        </label>
+
+        <input
+            id="gameIcon"
+            type="text"
+            placeholder="🎮"
+        >
+
+        <label>
+            Featured?
+        </label>
+
+        <select id="gameFeatured">
+
+            <option value="false">
+                No
+            </option>
+
+            <option value="true">
+                Yes
+            </option>
+
+        </select>
+
+
+        <div class="modal-buttons">
+
+            <button
+                class="play-button"
+                onclick="saveGame()"
+            >
+                💾 SAVE GAME
+            </button>
+
+            <button
+                class="close-button"
+                onclick="closeGameModal()"
+            >
+                CANCEL
+            </button>
+
+        </div>
+
+        <div
+            id="gameMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+</div>
+
+<div class="suggestion-box" id="suggestionBox">
+
+    <button type="button" id="suggestionTrigger">
+        💡 Feel free to suggest your ideas.
+    </button>
+
+    <form
+    id="suggestionForm"
+    action="https://formspree.io/f/xbglkyla"
+    method="POST"
+    >
+
+        <input
+            type="text"
+            id="suggestionName"
+            name="Name"
+            placeholder="👤 Enter your name..."
+            maxlength="50"
+            required
+        >
+
+        <textarea
+            id="suggestionText"
+            name="Suggestion"
+            placeholder="Write your suggestion here..."
+            required
+        ></textarea>
+
+        <div class="suggestion-buttons">
+
+            <button type="button" id="cancelSuggestion">
+                Cancel
+            </button>
+
+            <button type="submit">
+                Submit
+            </button>
+
+        </div>
+        <p id="suggestionMessage" aria-live="polite"></p>
+
+    </form>
+
+</div>
+
+<footer>
+
+    <strong>
+        🎮 Raghav's Game Hub
+    </strong>
+
+    <br><br>
+
+    Made with HTML, CSS & JavaScript 🚀
+
+    <br><br>
+
+    © 2026 Raghav's Game Hub
+
+</footer>
+
+
+
+<script>
+
+/* =========================================================
+   SUPABASE CONNECTION
+========================================================= */
+
+const SUPABASE_URL =
+    "https://wpdqxooopwivbzazonca.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_9wI9m5g9qLnjMtJzPGM5pA_KeJ36NWD";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================================
+   YOUR OWNER ID
+========================================================= */
+
+const OWNER_ID =
+    "548419b4-f0c2-427d-9e4c-9b729e566f3b";
+
+
+/* =========================================================
+   YOUR ORIGINAL 4 GAMES
+========================================================= */
+
+const defaultGames = [
+
+    {
+        name: "Mini Calculator",
+
+        description:
+            "Calculate numbers with useful mathematical functions.",
+
+        url:
+            "https://mini-calculate.netlify.app/",
+
+        icon:
+            "🧮",
+
+        featured:
+            false
+    },
+
+    {
+        name: "Tic-Tac-Toe",
+
+        description:
+            "Challenge yourself in the classic Tic-Tac-Toe game!",
+
+        url:
+            "https://tic-tac-toe-game-wx9v.bolt.host/",
+
+        icon:
+            "❌⭕",
+
+        featured:
+            false
+    },
+
+    {
+        name: "Space Shooter",
+
+        description:
+            "Take control and survive the ultimate space battle!",
+
+        url:
+            "https://space-shooter-game-dlr3.bolt.host/",
+
+        icon:
+            "🚀",
+
+        featured:
+            true
+    },
+
+    {
+        name: "Platformer",
+
+        description:
+            "Jump, run and conquer challenging platforms!",
+
+        url:
+            "https://platformer-game-pax5.bolt.host/",
+
+        icon:
+            "🏃",
+
+        featured:
+            false
+    }
+
+];
+
+
+let games = [];
+
+let editingGameId = null;
+
+
+/* =========================================================
+   LOAD GAMES
+========================================================= */
+
+async function loadGames() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("games")
+        .select("*")
+        .order("id", {
+            ascending: true
+        });
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not load games. Check your Supabase setup."
+        );
+
+        return;
+    }
+
+
+    games = data || [];
+
+    renderGames();
+
+    renderOwnerGames();
+
+}
+
+
+/* =========================================================
+   SEED ORIGINAL GAMES
+   ONLY WHEN OWNER LOGS IN
+========================================================= */
+
+async function seedDefaultGames() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("games")
+        .select("id")
+        .limit(1);
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+    }
+
+
+    if (data && data.length > 0) {
+
+        return;
+    }
+
+
+    const {
+        data: userData
+    } = await supabaseClient
+        .auth
+        .getUser();
+
+
+    const user =
+        userData.user;
+
+
+    if (!user || user.id !== OWNER_ID) {
+
+        return;
+    }
+
+
+    const rows =
+        defaultGames.map(game => ({
+
+            name:
+                game.name,
+
+            description:
+                game.description,
+
+            url:
+                game.url,
+
+            icon:
+                game.icon,
+
+            featured:
+                game.featured,
+
+            owner_id:
+                user.id
+
+        }));
+
+
+    const {
+        error: insertError
+    } = await supabaseClient
+        .from("games")
+        .insert(rows);
+
+
+    if (insertError) {
+
+        console.error(insertError);
+
+        alert(
+            "The games could not be added: " +
+            insertError.message
+        );
+
+        return;
+    }
+
+
+    await loadGames();
+
+}
+
+
+/* =========================================================
+   RENDER GAMES
+========================================================= */
+
+function renderGames() {
+
+    const container =
+        document.getElementById("games");
+
+
+    container.innerHTML = "";
+
+
+    games.forEach(game => {
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "game-card";
+
+
+        card.dataset.name =
+            (
+                game.name +
+                " " +
+                game.description
+            ).toLowerCase();
+
+
+        card.innerHTML = `
+
+            <div class="game-icon">
+                ${escapeHTML(game.icon || "🎮")}
+            </div>
+
+            <h2>
+                ${escapeHTML(game.name)}
+            </h2>
+
+            <p>
+                ${escapeHTML(game.description || "")}
+            </p>
+
+            <button
+                class="play-button"
+                onclick="openGame(
+                    '${escapeJS(game.name)}',
+                    '${escapeJS(game.url)}'
+                )"
+            >
+                ▶ PLAY NOW
+            </button>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+
+    searchGames();
+
+}
+
+
+/* =========================================================
+   OWNER GAME LIST
+========================================================= */
+
+function renderOwnerGames() {
+
+    const container =
+        document.getElementById("ownerGames");
+
+
+    container.innerHTML = "";
+
+
+    games.forEach(game => {
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            "owner-game-row";
+
+
+        row.innerHTML = `
+
+            <div>
+
+                <strong>
+                    ${escapeHTML(game.icon || "🎮")}
+                    ${escapeHTML(game.name)}
+                </strong>
+
+                <br>
+
+                <small style="color:#8fa4d8;">
+                    ${escapeHTML(game.url)}
+                </small>
+
+            </div>
+
+            <div class="owner-game-actions">
+
+                <button
+                    class="edit-button"
+                    onclick="openEditGame(${game.id})"
+                >
+                    ✏️ EDIT
+                </button>
+
+                <button
+                    class="danger-button"
+                    onclick="deleteGame(${game.id})"
+                >
+                    🗑️ DELETE
+                </button>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(row);
+
+    });
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function login() {
+
+    const email =
+        document
+        .getElementById("loginEmail")
+        .value
+        .trim();
+
+
+    const password =
+        document
+        .getElementById("loginPassword")
+        .value;
+
+
+    const message =
+        document
+        .getElementById("loginMessage");
+
+
+    message.textContent =
+        "Logging in...";
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .auth
+        .signInWithPassword({
+
+            email:
+                email,
+
+            password:
+                password
+
+        });
+
+
+    if (error) {
+
+        message.textContent =
+            "❌ " + error.message;
+
+        return;
+    }
+
+
+    if (!data.user || data.user.id !== OWNER_ID) {
+
+        await supabaseClient.auth.signOut();
+
+        message.textContent =
+            "❌ This account is not the owner.";
+
+        return;
+    }
+
+
+    closeLogin();
+
+    showOwnerPanel();
+
+    await seedDefaultGames();
+
+    await loadGames();
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    document
+        .getElementById("ownerPanel")
+        .style.display = "none";
+
+
+    document
+        .getElementById("ownerLoginButton")
+        .textContent = "👑 OWNER LOGIN";
+
+}
+
+
+/* =========================================================
+   CHECK LOGIN
+========================================================= */
+
+async function checkOwner() {
+
+    const {
+        data
+    } = await supabaseClient
+        .auth
+        .getUser();
+
+
+    const user =
+        data.user;
+
+
+    if (
+        user &&
+        user.id === OWNER_ID
+    ) {
+
+        showOwnerPanel();
+
+        await seedDefaultGames();
+
+    }
+
+}
+
+
+/* =========================================================
+   SHOW OWNER PANEL
+========================================================= */
+
+function showOwnerPanel() {
+
+    document
+        .getElementById("ownerPanel")
+        .style.display = "block";
+
+
+    document
+        .getElementById("ownerLoginButton")
+        .textContent = "👑 OWNER MODE";
+
+}
+
+
+/* =========================================================
+   LOGIN MODAL
+========================================================= */
+
+function openLogin() {
+
+    document
+        .getElementById("loginModal")
+        .style.display = "flex";
+
+}
+
+
+function closeLogin() {
+
+    document
+        .getElementById("loginModal")
+        .style.display = "none";
+
+
+    document
+        .getElementById("loginMessage")
+        .textContent = "";
+
+}
+
+
+/* =========================================================
+   ADD GAME
+========================================================= */
+
+function openAddGame() {
+
+    editingGameId =
+        null;
+
+
+    document
+        .getElementById("gameModalTitle")
+        .textContent =
+        "➕ ADD GAME";
+
+
+    document
+        .getElementById("gameName")
+        .value = "";
+
+
+    document
+        .getElementById("gameDescription")
+        .value = "";
+
+
+    document
+        .getElementById("gameURL")
+        .value = "";
+
+
+    document
+        .getElementById("gameIcon")
+        .value = "🎮";
+
+
+    document
+        .getElementById("gameFeatured")
+        .value = "false";
+
+
+    document
+        .getElementById("gameMessage")
+        .textContent = "";
+
+
+    document
+        .getElementById("gameModal")
+        .style.display = "flex";
+
+}
+
+
+/* =========================================================
+   EDIT GAME
+========================================================= */
+
+function openEditGame(id) {
+
+    const game =
+        games.find(
+            item => item.id === id
+        );
+
+
+    if (!game) return;
+
+
+    editingGameId =
+        id;
+
+
+    document
+        .getElementById("gameModalTitle")
+        .textContent =
+        "✏️ EDIT GAME";
+
+
+    document
+        .getElementById("gameName")
+        .value =
+        game.name;
+
+
+    document
+        .getElementById("gameDescription")
+        .value =
+        game.description;
+
+
+    document
+        .getElementById("gameURL")
+        .value =
+        game.url;
+
+
+    document
+        .getElementById("gameIcon")
+        .value =
+        game.icon || "🎮";
+
+
+    document
+        .getElementById("gameFeatured")
+        .value =
+        String(game.featured);
+
+
+    document
+        .getElementById("gameMessage")
+        .textContent = "";
+
+
+    document
+        .getElementById("gameModal")
+        .style.display = "flex";
+
+}
+
+
+/* =========================================================
+   SAVE GAME
+========================================================= */
+
+async function saveGame() {
+
+    const name =
+        document
+        .getElementById("gameName")
+        .value
+        .trim();
+
+
+    const description =
+        document
+        .getElementById("gameDescription")
+        .value
+        .trim();
+
+
+    const url =
+        document
+        .getElementById("gameURL")
+        .value
+        .trim();
+
+
+    const icon =
+        document
+        .getElementById("gameIcon")
+        .value
+        .trim() ||
+        "🎮";
+
+
+    const featured =
+        document
+        .getElementById("gameFeatured")
+        .value === "true";
+
+
+    const message =
+        document
+        .getElementById("gameMessage");
+
+
+    if (!name || !url) {
+
+        message.textContent =
+            "❌ Game name and URL are required.";
+
+        return;
+    }
+
+
+    const {
+        data: userData
+    } = await supabaseClient
+        .auth
+        .getUser();
+
+
+    const user =
+        userData.user;
+
+
+    if (!user || user.id !== OWNER_ID) {
+
+        message.textContent =
+            "❌ Owner login required.";
+
+        return;
+    }
+
+
+    message.textContent =
+        "Saving...";
+
+
+    let error;
+
+
+    if (editingGameId === null) {
+
+        const result =
+            await supabaseClient
+                .from("games")
+                .insert({
+
+                    name:
+                        name,
+
+                    description:
+                        description,
+
+                    url:
+                        url,
+
+                    icon:
+                        icon,
+
+                    featured:
+                        featured,
+
+                    owner_id:
+                        user.id
+
+                });
+
+
+        error =
+            result.error;
+
+    }
+
+    else {
+
+        const result =
+            await supabaseClient
+                .from("games")
+                .update({
+
+                    name:
+                        name,
+
+                    description:
+                        description,
+
+                    url:
+                        url,
+
+                    icon:
+                        icon,
+
+                    featured:
+                        featured
+
+                })
+                .eq(
+                    "id",
+                    editingGameId
+                );
+
+
+        error =
+            result.error;
+
+    }
+
+
+    if (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "❌ " + error.message;
+
+        return;
+    }
+
+
+    closeGameModal();
+
+    await loadGames();
+
+}
+
+
+/* =========================================================
+   DELETE GAME
+========================================================= */
+
+async function deleteGame(id) {
+
+    const game =
+        games.find(
+            item => item.id === id
+        );
+
+
+    if (!game) return;
+
+
+    const confirmed =
+        confirm(
+            `Delete "${game.name}"?`
+        );
+
+
+    if (!confirmed) return;
+
+
+    const {
+        data: userData
+    } = await supabaseClient
+        .auth
+        .getUser();
+
+
+    const user =
+        userData.user;
+
+
+    if (!user || user.id !== OWNER_ID) {
+
+        alert(
+            "Owner login required."
+        );
+
+        return;
+    }
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("games")
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+        alert(
+            "Could not delete game: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    await loadGames();
+
+}
+
+
+/* =========================================================
+   CLOSE GAME MODAL
+========================================================= */
+
+function closeGameModal() {
+
+    document
+        .getElementById("gameModal")
+        .style.display = "none";
+
+}
+
+
+/* =========================================================
+   GAME PLAYER
+========================================================= */
+
+function openGame(name, url) {
+
+    document
+        .getElementById("home")
+        .style.display = "none";
+
+
+    document
+        .getElementById("gamePlayer")
+        .style.display = "block";
+
+
+    document
+        .getElementById("playerTitle")
+        .textContent =
+        "🎮 " + name;
+
+
+    document
+        .getElementById("gameFrame")
+        .src =
+        url;
+
+
+    document
+        .getElementById("newTabButton")
+        .href =
+        url;
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+function closeGame() {
+
+    document
+        .getElementById("gameFrame")
+        .src = "";
+
+
+    document
+        .getElementById("gamePlayer")
+        .style.display = "none";
+
+
+    document
+        .getElementById("home")
+        .style.display = "block";
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function searchGames() {
+
+    const text =
+        document
+        .getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const cards =
+        document.querySelectorAll(
+            ".game-card"
+        );
+
+
+    let found =
+        0;
+
+
+    cards.forEach(card => {
+
+        const name =
+            card.dataset.name;
+
+
+        if (
+            name.includes(text)
+        ) {
+
+            card.style.display =
+                "";
+
+            found++;
+
+        }
+
+        else {
+
+            card.style.display =
+                "none";
+
+        }
+
+    });
+
+
+    document
+        .getElementById("noResults")
+        .style.display =
+        found === 0
+            ? "block"
+            : "none";
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showHome() {
+
+    closeGame();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+function scrollToGames() {
+
+    closeGame();
+
+    setTimeout(() => {
+
+        document
+            .getElementById("games")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+    }, 100);
+
+}
+
+
+function scrollToFeatured() {
+
+    closeGame();
+
+    setTimeout(() => {
+
+        document
+            .getElementById("featured")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+    }, 100);
+
+}
+
+
+/* =========================================================
+   BASIC HTML SAFETY
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function escapeJS(value) {
+
+    return String(value)
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "\\r");
+
+}
+
+
+/* =========================================================
+   START WEBSITE
+========================================================= */
+
+async function startApp() {
+
+    await checkOwner();
+
+    await loadGames();
+
+}
+
+
+startApp();
+
+const suggestionBox = document.getElementById("suggestionBox");
+
+const suggestionTrigger = document.getElementById("suggestionTrigger");
+
+const cancelSuggestion = document.getElementById("cancelSuggestion");
+
+
+suggestionTrigger.addEventListener("click", function () {
+
+    suggestionBox.classList.add("open");
+
+});
+
+
+cancelSuggestion.addEventListener("click", function () {
+
+    suggestionBox.classList.remove("open");
+
+});
+
+
+const suggestionForm = document.getElementById("suggestionForm");
+const suggestionMessage = document.getElementById("suggestionMessage");
+const submitButton = suggestionForm.querySelector('button[type="submit"]');
+
+suggestionForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
+    suggestionMessage.textContent = "";
+
+    try {
+        const formData = new FormData(suggestionForm);
+
+        const response = await fetch(suggestionForm.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+                Accept: "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Submission failed");
+        }
+
+        suggestionMessage.style.color = "#4ade80";
+        suggestionMessage.textContent = "✓ Suggestion sent successfully!";
+
+        suggestionForm.reset();
+
+    } catch (error) {
+        suggestionMessage.style.color = "#ffffff";
+        suggestionMessage.textContent = "Could not send. Please try again.";
+
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit";
+    }
+});
+
+</script>
+
+</body>
+
+</html>
