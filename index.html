@@ -2500,6 +2500,13 @@ suggestionForm.addEventListener("submit", async function(event) {
         suggestionForm.reset();
         suggestionBox.classList.remove("open");
 
+        suggestionForm.reset();
+        suggestionBox.classList.remove("open");
+
+        setTimeout(function() {
+            suggestionMessage.textContent = "";
+        }, 5000);
+
     } catch (error) {
         suggestionMessage.style.color = "#ffffff";
         suggestionMessage.textContent = "Could not send. Please try again.";
