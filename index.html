@@ -2499,6 +2499,7 @@ suggestionForm.addEventListener("submit", async function(event) {
         suggestionMessage.textContent = "✓ Suggestion sent successfully!";
 
         suggestionForm.reset();
+        suggestionBox.classList.remove("open");
 
     } catch (error) {
         suggestionMessage.style.color = "#ffffff";
