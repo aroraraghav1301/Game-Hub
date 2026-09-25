@@ -852,6 +852,24 @@
         }
 
         #suggestionMessage {
+            text-align: center;
+            color: #ffffff;
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        #suggestionMessage:empty {
+            display: none;
+        }
+
+        #suggestionMessage:not(:empty) {
+            background: #123d32;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        #suggestionMessage {
     text-align: center;
     color: #4ade80;
     margin-top: 12px;
@@ -860,12 +878,6 @@
 #suggestionMessage:empty {
     display: none;
 }
-
-        #suggestionMessage:not(:empty) {
-            background: #123d32;
-            padding: 12px;
-            border-radius: 10px;
-        }
 
     </style>
 
