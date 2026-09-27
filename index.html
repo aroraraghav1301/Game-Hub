@@ -209,6 +209,10 @@
     );
 
     const form = document.getElementById("registrationForm");
+
+    if (localStorage.getItem("registered") === "true") {
+    window.location.replace("/games.html");
+}
     const message = document.getElementById("message");
     const submitButton = form.querySelector(
         'button[type="submit"]'
@@ -240,7 +244,7 @@
             message.textContent =
                 "Registration successful! Opening Game Hub...";
 
-            sessionStorage.setItem("registered", "true");
+            localStorage.setItem("registered", "true");
 
             window.location.href = "/games.html";
 
