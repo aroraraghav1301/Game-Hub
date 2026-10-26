@@ -402,7 +402,7 @@
         ================================= */
 
         .game-card {
-            background: rgba(12, 27, 70, 0.94);
+            background: linear-gradient(150deg, rgba(16, 35, 83, 0.96), rgba(7, 15, 42, 0.97));
 
             border: 2px solid #244fae;
 
@@ -873,6 +873,25 @@
     border-radius: 10px;
 }
 
+
+        /* PRO UPGRADE */
+        .hub-stats{width:min(1100px,92%);margin:0 auto 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+        .stat-card,.reward-strip{background:linear-gradient(145deg,rgba(16,35,83,.9),rgba(31,18,75,.92));border:1px solid #4169cf;border-radius:18px;padding:18px;box-shadow:0 12px 32px #0005;backdrop-filter:blur(12px)}
+        .stat-card span{display:block;color:#aebfe9;font-size:13px;margin-bottom:7px}.stat-card strong{font-size:26px;color:#fff}
+        .reward-strip{width:min(1100px,92%);margin:0 auto 35px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+        .reward-strip p{color:#b9c8ee;margin-top:5px}.tag-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:0 0 18px}
+        .tag-chip{font-size:12px;padding:5px 10px;border:1px solid #5a6de0;border-radius:999px;background:#24346e;color:#dbe7ff;letter-spacing:.2px}
+        .featured-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:20px;text-align:center}
+        .featured-item{padding:20px;border-radius:18px;background:#081434aa;border:1px solid #5274df}
+        .featured-item .featured-icon{font-size:48px}.featured-item h3{margin:8px 0}.featured-item p{color:#bdcafa;line-height:1.5;margin-bottom:16px}
+        .owner-analytics{margin:25px 0;padding:20px;border-radius:16px;background:#08132f;border:1px solid #3658a8;overflow:auto}
+        .owner-analytics h3{margin-bottom:12px;color:#b9c8ff}.analytics-table{width:100%;border-collapse:collapse;min-width:360px}.analytics-table th,.analytics-table td{text-align:left;padding:10px;border-bottom:1px solid #253b76}.analytics-table th{color:#9db5ff}
+        .tag-input-help{font-size:12px;color:#9fb4e7;margin-top:5px}.game-card{backdrop-filter:blur(10px);background:linear-gradient(150deg,rgba(17,34,79,.96),rgba(8,17,46,.96));border-color:#3556b4}
+        .game-card .tag-row{justify-content:flex-start}.game-card h2{letter-spacing:.2px}.game-card .game-icon{filter:drop-shadow(0 0 14px #6488ff55)}
+        #suggestionContact{display:block;width:100%;padding:14px;margin:0 0 15px;box-sizing:border-box;font-family:Arial,sans-serif;background:#d3d3d3;color:#111;font-weight:500;border:1px solid #777;border-radius:12px;font-size:16px;outline:none}
+        #suggestionContact::placeholder{color:#555}
+        @media(max-width:600px){.hub-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-card strong{font-size:22px}.reward-strip{align-items:flex-start}}
+
     </style>
 
 </head>
@@ -950,42 +969,25 @@
     </div>
 
 
-    <!-- FEATURED -->
-
-    <section
-        class="featured"
-        id="featured"
-    >
-
-        <div class="featured-label">
-            ⭐ FEATURED GAME
-        </div>
-
-        <div class="featured-icon">
-            🚀
-        </div>
-
-        <h2>
-            Space Shooter
-        </h2>
-
-        <p style="margin:15px auto 25px;max-width:650px;color:#c4d2f7;">
-            Enter the galaxy, take control of your spaceship
-            and survive the ultimate space battle!
-        </p>
-
-        <button
-            class="play-button"
-            onclick="openGame(
-                'Space Shooter',
-                'https://space-shooter-game-dlr3.bolt.host/'
-            )"
-        >
-            🚀 PLAY SPACE SHOOTER
-        </button>
-
+    <!-- DYNAMIC FEATURED GAMES -->
+    <section class="featured" id="featured">
+        <div class="featured-label">⭐ FEATURED GAMES</div>
+        <h2 style="font-size:clamp(25px,4vw,38px);margin:8px 0">Hand-picked for you</h2>
+        <p style="color:#c4d2f7">Owner-selected games from the Game Hub collection.</p>
+        <div id="featuredGames" class="featured-grid"></div>
+        <p id="noFeatured" style="display:none;color:#c4d2f7;margin-top:18px">No featured games yet. The owner can mark games as featured from the dashboard.</p>
     </section>
 
+    <section class="hub-stats" aria-label="Game Hub statistics">
+        <div class="stat-card"><span>🎮 Games available</span><strong id="totalGamesStat">—</strong></div>
+        <div class="stat-card"><span>🔥 Your daily streak</span><strong id="streakStat">0 days</strong></div>
+        <div class="stat-card"><span>🪙 Your points</span><strong id="pointsStat">0</strong></div>
+        <div class="stat-card"><span>🏆 Reward level</span><strong id="levelStat">Rookie</strong></div>
+    </section>
+    <section class="reward-strip">
+        <div><strong>🪙 Game Hub Rewards</strong><p id="rewardMessage">Visit daily and play games to earn points.</p></div>
+        <div class="tag-chip" id="nextReward">Next reward: 100 points</div>
+    </section>
 
     <!-- OWNER PANEL -->
 
@@ -1013,10 +1015,12 @@
 
         </div>
 
-        <div
-            id="ownerGames"
-            class="owner-games"
-        ></div>
+        <div id="ownerGames" class="owner-games"></div>
+        <div class="owner-analytics">
+            <h3>📊 Game analytics — plays by game</h3>
+            <p style="color:#9fb4e7;margin-bottom:12px">Counts are recorded when a visitor presses Play. Visitors are represented by a random browser ID, not their name.</p>
+            <div id="ownerAnalytics">Loading analytics…</div>
+        </div>
 
     </section>
 
@@ -1205,6 +1209,10 @@
             placeholder="🎮"
         >
 
+        <label for="gameTags">Tags (comma-separated)</label>
+        <input id="gameTags" type="text" placeholder="Arcade, Puzzle, 2 Player">
+        <p class="tag-input-help">You can create any tags here. New tags appear on the game card and are searchable.</p>
+
         <label>
             Featured?
         </label>
@@ -1269,6 +1277,8 @@
             maxlength="50"
             required
         >
+
+        <input type="text" id="suggestionContact" name="E-mail or Phone no." placeholder="✉️ E-mail or Phone no. (optional)" maxlength="120" autocomplete="email">
 
         <textarea
             id="suggestionText"
@@ -1357,7 +1367,8 @@ const defaultGames = [
             "🧮",
 
         featured:
-            false
+            false,
+        tags: ["Tools", "Utility"]
     },
 
     {
@@ -1373,7 +1384,8 @@ const defaultGames = [
             "❌⭕",
 
         featured:
-            false
+            false,
+        tags: ["Puzzle", "Classic"]
     },
 
     {
@@ -1389,7 +1401,8 @@ const defaultGames = [
             "🚀",
 
         featured:
-            true
+            true,
+        tags: ["Arcade", "Action"]
     },
 
     {
@@ -1405,7 +1418,8 @@ const defaultGames = [
             "🏃",
 
         featured:
-            false
+            false,
+        tags: ["Platformer", "Adventure"]
     }
 
 ];
@@ -1519,6 +1533,9 @@ async function seedDefaultGames() {
             featured:
                 game.featured,
 
+            tags:
+                game.tags || [],
+
             owner_id:
                 user.id
 
@@ -1551,6 +1568,105 @@ async function seedDefaultGames() {
 
 
 /* =========================================================
+   REWARDS + ANALYTICS HELPERS
+========================================================= */
+const HUB_VISITOR_KEY = (() => {
+    let key = localStorage.getItem("gameHubVisitorKey");
+    if (!key) {
+        key = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "v-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem("gameHubVisitorKey", key);
+    }
+    return key;
+})();
+const REWARD_KEY = "gameHubRewardsV1";
+function getRewardState() {
+    try { return JSON.parse(localStorage.getItem(REWARD_KEY)) || { points: 0, streak: 0, lastVisit: "", playedToday: [] }; }
+    catch { return { points: 0, streak: 0, lastVisit: "", playedToday: [] }; }
+}
+function dateKey(date = new Date()) { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`; }
+function updateRewardUI() {
+    const r = getRewardState();
+    const points = Number(r.points) || 0;
+    const streak = Number(r.streak) || 0;
+    const level = points >= 1000 ? "Legend" : points >= 500 ? "Master" : points >= 200 ? "Pro" : points >= 100 ? "Explorer" : "Rookie";
+    document.getElementById("streakStat").textContent = `${streak} day${streak===1?"":"s"}`;
+    document.getElementById("pointsStat").textContent = points.toLocaleString();
+    document.getElementById("levelStat").textContent = level;
+    const next = points < 100 ? 100 : points < 200 ? 200 : points < 500 ? 500 : points < 1000 ? 1000 : 1500;
+    document.getElementById("nextReward").textContent = points >= 1000 ? "🏆 Legend unlocked!" : `Next reward: ${next} points`;
+    document.getElementById("rewardMessage").textContent = streak >= 7 ? "🔥 7-day streak! You earned the Daily Champion bonus." : "Daily visit +10 points · First game of the day +5 points · 7-day streak bonus +25 points.";
+}
+async function recordHubEvent(eventType, game = null) {
+    const today = dateKey();
+    const r = getRewardState();
+    if (eventType === "visit" && r.lastVisit !== today) {
+        const yesterday = dateKey(new Date(Date.now() - 86400000));
+        r.streak = r.lastVisit === yesterday ? (Number(r.streak)||0) + 1 : 1;
+        r.lastVisit = today;
+        r.points = (Number(r.points)||0) + 10;
+        if (r.streak > 0 && r.streak % 7 === 0) r.points += 25;
+        r.playedToday = [];
+        localStorage.setItem(REWARD_KEY, JSON.stringify(r));
+    }
+    if (eventType === "play" && game) {
+        if (!Array.isArray(r.playedToday)) r.playedToday = [];
+        if (!r.playedToday.includes(String(game.id))) {
+            r.playedToday.push(String(game.id));
+            r.points = (Number(r.points)||0) + 5;
+            localStorage.setItem(REWARD_KEY, JSON.stringify(r));
+        }
+    }
+    updateRewardUI();
+    try {
+        await supabaseClient.from("game_hub_events").insert({
+            event_type: eventType,
+            game_id: game && game.id != null ? String(game.id) : null,
+            game_name: game && game.name ? game.name : null,
+            visitor_key: HUB_VISITOR_KEY
+        });
+    } catch (e) { console.debug("Analytics event was not saved", e); }
+}
+function normalizedFeatured(game) {
+    return game.featured === true || game.featured === "true" || game.featured === 1 || game.featured === "1";
+}
+function getGameTags(game) {
+    if (Array.isArray(game.tags)) return game.tags.map(t => String(t).trim()).filter(Boolean);
+    if (typeof game.tags === "string") return game.tags.split(",").map(t => t.trim()).filter(Boolean);
+    return [];
+}
+function renderFeaturedGames() {
+    const host = document.getElementById("featuredGames");
+    const selected = games.filter(normalizedFeatured);
+    host.innerHTML = "";
+    document.getElementById("noFeatured").style.display = selected.length ? "none" : "block";
+    selected.forEach(game => {
+        const item = document.createElement("article");
+        item.className = "featured-item";
+        const icon = document.createElement("div"); icon.className = "featured-icon"; icon.textContent = game.icon || "🎮";
+        const title = document.createElement("h3"); title.textContent = game.name;
+        const desc = document.createElement("p"); desc.textContent = game.description || "Jump in and play.";
+        const btn = document.createElement("button"); btn.className = "play-button"; btn.textContent = "▶ PLAY FEATURED"; btn.addEventListener("click", () => openGameForRecord(game));
+        item.append(icon,title,desc,btn); host.appendChild(item);
+    });
+}
+async function loadOwnerAnalytics() {
+    const host = document.getElementById("ownerAnalytics");
+    const { data: userData } = await supabaseClient.auth.getUser();
+    if (!userData.user || userData.user.id !== OWNER_ID) return;
+    const { data, error } = await supabaseClient.from("game_hub_events").select("event_type,game_id,game_name").eq("event_type","play");
+    if (error) { host.textContent = "Analytics unavailable. Run the supplied SQL upgrade first."; return; }
+    const counts = new Map();
+    (data || []).forEach(e => { const key = e.game_id || e.game_name || "unknown"; const row = counts.get(key) || { name: e.game_name || "Deleted game", plays: 0 }; row.plays++; counts.set(key,row); });
+    const rows = [...counts.values()].sort((a,b)=>b.plays-a.plays);
+    if (!rows.length) { host.textContent = "No game plays recorded yet. Counts will appear here as visitors play."; return; }
+    const table = document.createElement("table"); table.className = "analytics-table";
+    table.innerHTML = "<thead><tr><th>Game</th><th>Recorded plays</th></tr></thead>";
+    const tbody = document.createElement("tbody");
+    rows.forEach(r => { const tr=document.createElement("tr"); const name=document.createElement("td"); name.textContent=r.name; const count=document.createElement("td"); count.textContent=r.plays.toLocaleString(); tr.append(name,count); tbody.appendChild(tr); });
+    table.appendChild(tbody); host.replaceChildren(table);
+}
+
+/* =========================================================
    RENDER GAMES
 ========================================================= */
 
@@ -1573,13 +1689,7 @@ function renderGames() {
             "game-card";
 
 
-        card.dataset.name =
-            (
-                game.name +
-                " " +
-                game.description
-            ).toLowerCase();
-
+        card.dataset.name = (game.name + " " + (game.description || "") + " " + getGameTags(game).join(" ")).toLowerCase();
 
         card.innerHTML = `
 
@@ -1591,28 +1701,20 @@ function renderGames() {
                 ${escapeHTML(game.name)}
             </h2>
 
-            <p>
-                ${escapeHTML(game.description || "")}
-            </p>
-
-            <button
-                class="play-button"
-                onclick="openGame(
-                    '${escapeJS(game.name)}',
-                    '${escapeJS(game.url)}'
-                )"
-            >
-                ▶ PLAY NOW
-            </button>
+            <p>${escapeHTML(game.description || "")}</p>
+            <div class="tag-row">${getGameTags(game).map(tag => `<span class="tag-chip">${escapeHTML(tag)}</span>`).join("")}</div>
+            <button class="play-button" type="button">▶ PLAY NOW</button>
 
         `;
 
 
+        card.querySelector(".play-button").addEventListener("click", () => openGameForRecord(game));
         container.appendChild(card);
 
     });
 
-
+    document.getElementById("totalGamesStat").textContent = games.length;
+    renderFeaturedGames();
     searchGames();
 
 }
@@ -1655,6 +1757,7 @@ function renderOwnerGames() {
                 <small style="color:#8fa4d8;">
                     ${escapeHTML(game.url)}
                 </small>
+                <br><small style="color:#9db5ff">${normalizedFeatured(game) ? "⭐ Featured" : ""}${getGameTags(game).length ? " · Tags: " + escapeHTML(getGameTags(game).join(", ")) : ""}</small>
 
             </div>
 
@@ -1780,6 +1883,7 @@ async function logout() {
     document
         .getElementById("ownerLoginButton")
         .textContent = "👑 OWNER LOGIN";
+    document.getElementById("ownerAnalytics").textContent = "Log in as owner to view analytics.";
 
 }
 
@@ -1829,6 +1933,7 @@ function showOwnerPanel() {
     document
         .getElementById("ownerLoginButton")
         .textContent = "👑 OWNER MODE";
+    loadOwnerAnalytics();
 
 }
 
@@ -1896,6 +2001,7 @@ function openAddGame() {
         .value = "🎮";
 
 
+    document.getElementById("gameTags").value = "";
     document
         .getElementById("gameFeatured")
         .value = "false";
@@ -1962,10 +2068,10 @@ function openEditGame(id) {
         game.icon || "🎮";
 
 
+    document.getElementById("gameTags").value = getGameTags(game).join(", ");
     document
         .getElementById("gameFeatured")
-        .value =
-        String(game.featured);
+        .value = normalizedFeatured(game) ? "true" : "false";
 
 
     document
@@ -2015,10 +2121,8 @@ async function saveGame() {
         "🎮";
 
 
-    const featured =
-        document
-        .getElementById("gameFeatured")
-        .value === "true";
+    const featured = document.getElementById("gameFeatured").value === "true";
+    const tags = [...new Set(document.getElementById("gameTags").value.split(",").map(tag => tag.trim()).filter(Boolean).map(tag => tag.slice(0,32)))].slice(0,12);
 
 
     const message =
@@ -2084,6 +2188,8 @@ async function saveGame() {
                     featured:
                         featured,
 
+                    tags: tags,
+
                     owner_id:
                         user.id
 
@@ -2115,7 +2221,8 @@ async function saveGame() {
                         icon,
 
                     featured:
-                        featured
+                        featured,
+                    tags: tags
 
                 })
                 .eq(
@@ -2234,7 +2341,14 @@ function closeGameModal() {
    GAME PLAYER
 ========================================================= */
 
+function openGameForRecord(game) {
+    if (!game || !game.url) return;
+    openGame(game.name, game.url);
+}
+
 function openGame(name, url) {
+    const game = games.find(item => item.name === name && item.url === url);
+    if (game) recordHubEvent("play", game);
 
     document
         .getElementById("home")
@@ -2443,8 +2557,10 @@ function escapeJS(value) {
 async function startApp() {
 
     await checkOwner();
-
     await loadGames();
+    await recordHubEvent("visit");
+    updateRewardUI();
+    loadOwnerAnalytics();
 
 }
 
@@ -2500,9 +2616,6 @@ suggestionForm.addEventListener("submit", async function(event) {
 
         suggestionMessage.style.color = "#4ade80";
         suggestionMessage.textContent = "✓ Suggestion sent successfully!";
-
-        suggestionForm.reset();
-        suggestionBox.classList.remove("open");
 
         suggestionForm.reset();
         suggestionBox.classList.remove("open");
