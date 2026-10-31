@@ -1590,7 +1590,13 @@ async function checkSession() {
     isOwner = Boolean(isOwnerAccount && !ownerModeWasClosed);
     document.getElementById("ownerPanel").hidden = !isOwner;
 
-    if (isOwner) await loadOwnerAnalytics();
+    // Games are loaded before the owner session check during startup.
+    // Render the owner list here as well, so an automatically recognised
+    // owner sees the existing games without needing to log in again.
+    if (isOwner) {
+        renderOwnerGames();
+        await loadOwnerAnalytics();
+    }
 }
 
 /* OWNER GAME MANAGEMENT */
