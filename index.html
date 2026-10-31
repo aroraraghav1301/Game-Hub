@@ -1,264 +1,86 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Register | Raghav's Game Hub</title>
-    <link rel="icon" href="/icon.png">
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            background: linear-gradient(
-                135deg, #080b24, #18245a, #301653
-            );
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        .registration-box {
-            width: 100%;
-            max-width: 460px;
-            padding: 35px;
-            background: #111936;
-            border: 1px solid #5268ff;
-            border-radius: 22px;
-            box-shadow: 0 0 45px #344bff55;
-        }
-
-        h1 {
-            text-align: center;
-            color: #80eaff;
-            text-shadow: 0 0 18px #00bfff;
-            margin-top: 0;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #b9c5ed;
-            margin-bottom: 30px;
-        }
-
-        label {
-            display: block;
-            margin: 18px 0 8px;
-            font-weight: bold;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 14px;
-            background: #202b50;
-            border: 1px solid #5366a1;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-        }
-
-        input::placeholder {
-            color: #aeb9d6;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #48e5ff;
-            box-shadow: 0 0 12px #48e5ff66;
-        }
-
-        .submit-btn {
-            width: 100%;
-            margin-top: 28px;
-            padding: 15px;
-            background: linear-gradient(
-                90deg, #00c8ff, #7855ff
-            );
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .submit-btn:hover {
-            filter: brightness(1.2);
-        }
-
-        .privacy {
-            margin-top: 24px;
-            font-size: 12px;
-            line-height: 1.6;
-            text-align: center;
-            color: #b9c5ed;
-        }
-
-        #message {
-            text-align: center;
-            color: #ffdc85;
-            margin-top: 15px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101735">
+<title>Player Account | Raghav's Game Hub</title>
+<link rel="icon" href="icon.png">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at top,#263c83,#101735 55%,#080b19);font-family:Arial,sans-serif;color:#fff}
+.account{width:min(100%,470px);padding:30px;background:#111936;border:1px solid #5268ff;border-radius:22px;box-shadow:0 15px 55px #0008}
+h1{text-align:center;color:#80eaff;text-shadow:0 0 18px #00bfff;margin:0 0 8px}.sub{text-align:center;color:#bdcafa;line-height:1.5;margin:0 0 24px}
+label{display:block;margin:15px 0 7px;font-weight:700}input{width:100%;padding:13px;background:#202b50;border:1px solid #5366a1;border-radius:10px;color:white;font-size:16px}input:focus{outline:2px solid #48e5ff}
+button{width:100%;margin-top:20px;padding:14px;border:0;border-radius:11px;background:linear-gradient(90deg,#00c8ff,#7855ff);color:white;font-size:17px;font-weight:bold;cursor:pointer}button:disabled{opacity:.6;cursor:wait}
+.switch{margin-top:18px;text-align:center;color:#c5d3f6}.switch button{width:auto;margin:0;padding:0;background:none;color:#80eaff;text-decoration:underline;font-size:inherit}
+#message{min-height:24px;color:#ffdc85;text-align:center;line-height:1.5}.privacy{font-size:12px;line-height:1.6;color:#aeb9d6;text-align:center;margin-top:20px}
+</style>
 </head>
-
 <body>
-
-    <main class="registration-box">
-        <h1>🎮 Raghav's Game Hub</h1>
-
-        <p class="subtitle">
-            Welcome! Complete this form before playing.
-        </p>
-
-        <form id="registrationForm">
-
-            <label for="visitorName">Name *</label>
-            <input
-                type="text"
-                id="visitorName"
-                name="name"
-                placeholder="Enter your name"
-                maxlength="60"
-                required
-            >
-
-            <label for="standard">Standard / Class *</label>
-            <select id="standard" name="standard" required>
-                <option value="">Select your class</option>
-                <option value="1">Class 1</option>
-                <option value="2">Class 2</option>
-                <option value="3">Class 3</option>
-                <option value="4">Class 4</option>
-                <option value="5">Class 5</option>
-                <option value="6">Class 6</option>
-                <option value="7">Class 7</option>
-                <option value="8">Class 8</option>
-                <option value="9">Class 9</option>
-                <option value="10">Class 10</option>
-                <option value="11">Class 11</option>
-                <option value="12">Class 12</option>
-                <option value="Other">Other</option>
-            </select>
-
-            <label for="school">School *</label>
-            <input
-                type="text"
-                id="school"
-                name="school"
-                placeholder="Enter your school"
-                maxlength="100"
-                required
-            >
-
-            <label for="source">
-                How did you hear about Game Hub? *
-            </label>
-
-            <select id="source" name="source" required>
-                <option value="">Choose an option</option>
-                <option value="Friend">Friend</option>
-                <option value="School">School</option>
-                <option value="Google">Google</option>
-                <option value="Social Media">
-                    Social Media
-                </option>
-                <option value="Other">Other</option>
-            </select>
-
-            <button type="submit" class="submit-btn">
-                Submit & Play 🚀
-            </button>
-
-            <p id="message" role="status"></p>
-
-            <p class="privacy">
-                Your responses will be stored in our
-                database to help us understand our visitors
-                and improve Game Hub. They will not be
-                displayed publicly. Please ask a parent
-                or guardian before sharing personal details.
-            </p>
-
-        </form>
-    </main>
-
-    
+<main class="account">
+<h1>🎮 Raghav's Game Hub</h1>
+<p class="sub" id="subtitle">Create your player account and get your own Player ID.</p>
+<form id="accountForm">
+<div id="nameWrap"><label for="displayName">Player name</label><input id="displayName" maxlength="30" autocomplete="nickname" placeholder="How should players see you?"></div>
+<label for="email">Email address</label><input id="email" type="email" autocomplete="email" required maxlength="254">
+<label for="password">Password</label><input id="password" type="password" minlength="8" autocomplete="new-password" required>
+<button id="submitBtn" type="submit">Create account 🚀</button>
+</form>
+<p id="message" role="status" aria-live="polite"></p>
+<p class="switch"><span id="switchText">Already have an account?</span> <button type="button" id="switchMode">Log in</button></p>
+<p class="privacy">Your email is used for sign-in and is not shown on public profiles. Choose a display name that does not reveal private information.</p>
+</main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-    const supabaseUrl =
-        "https://wpdqxooopwivbzazonca.supabase.co";
-
-    const supabaseKey =
-        "sb_publishable_9wI9m5g9qLnjMtJzPGM5pA_KeJ36NWD";
-
-    const db = window.supabase.createClient(
-        supabaseUrl,
-        supabaseKey
-    );
-
-    const form = document.getElementById("registrationForm");
-
-    if (localStorage.getItem("registered") === "true") {
-    window.location.replace("/games.html");
+const db = window.supabase.createClient(
+ "https://wpdqxooopwivbzazonca.supabase.co",
+ "sb_publishable_9wI9m5g9qLnjMtJzPGM5pA_KeJ36NWD"
+);
+const form=document.getElementById("accountForm"), message=document.getElementById("message");
+let mode="signup";
+function setMode(next){
+ mode=next; const signup=mode==="signup";
+ document.getElementById("nameWrap").hidden=!signup;
+ document.getElementById("displayName").required=signup;
+ document.getElementById("password").autocomplete=signup?"new-password":"current-password";
+ document.getElementById("subtitle").textContent=signup?"Create your player account and get your own Player ID.":"Welcome back. Log in to continue your Game Hub journey.";
+ document.getElementById("submitBtn").textContent=signup?"Create account 🚀":"Log in 🎮";
+ document.getElementById("switchText").textContent=signup?"Already have an account?":"New to Game Hub?";
+ document.getElementById("switchMode").textContent=signup?"Log in":"Create account";
+ message.textContent="";
 }
-    const message = document.getElementById("message");
-    const submitButton = form.querySelector(
-        'button[type="submit"]'
-    );
-
-    form.addEventListener("submit", async function(event) {
-        event.preventDefault();
-
-        submitButton.disabled = true;
-        submitButton.textContent = "Registering...";
-        message.textContent = "";
-
-        const visitor = {
-            name: document.getElementById("visitorName").value.trim(),
-            standard: document.getElementById("standard").value,
-            school: document.getElementById("school").value.trim(),
-            source: document.getElementById("source").value
-        };
-
-        try {
-            const { error } = await db
-                .from("visitors")
-                .insert(visitor);
-
-            if (error) {
-                throw error;
-            }
-
-            message.textContent =
-                "Registration successful! Opening Game Hub...";
-
-            localStorage.setItem("registered", "true");
-
-            window.location.href = "/games.html";
-
-        } catch (error) {
-            console.error("Registration error:", error);
-
-            message.textContent =
-                "Registration failed. Please try again.";
-
-            submitButton.disabled = false;
-            submitButton.textContent = "Submit & Play 🚀";
-        }
-    });
+document.getElementById("switchMode").addEventListener("click",()=>setMode(mode==="signup"?"login":"signup"));
+(async()=>{
+ try {
+  // Validate the session with Supabase instead of trusting a possibly stale
+  // locally cached session. This prevents index.html <-> games.html redirect loops.
+  const { data, error } = await db.auth.getUser();
+  if (!error && data?.user) location.replace("games.html");
+  else if (error) console.warn("Could not validate existing session:", error.message);
+ } catch (error) {
+  console.error("Could not check existing Supabase session:", error);
+ }
+})();
+form.addEventListener("submit",async e=>{
+ e.preventDefault(); const btn=document.getElementById("submitBtn");
+ btn.disabled=true; message.textContent=mode==="signup"?"Creating your account…":"Signing in…";
+ try{
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+  if(mode==="signup"){
+   const display_name=document.getElementById("displayName").value.trim();
+   if(display_name.length<2) throw new Error("Player name must be at least 2 characters.");
+   const {data,error}=await db.auth.signUp({email,password,options:{data:{display_name}}});
+   if(error) throw error;
+   if(data.session){message.textContent="Account created! Opening your hub…";location.replace("games.html");}
+   else message.textContent="Account created. Check your email for the verification link, then log in here.";
+  }else{
+   const {error}=await db.auth.signInWithPassword({email,password});
+   if(error) throw error;
+   location.replace("games.html");
+  }
+ }catch(err){console.error(err);message.textContent=err.message||"Something went wrong. Please try again.";}
+ finally{btn.disabled=false;}
+});
 </script>
-
-</body>
-</html>
+</body></html>

@@ -806,6 +806,46 @@ footer {
     .featured-item { padding: 11px 9px; }
 }
 
+
+/* PLAYER SYSTEM */
+.player-nav-wrap{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:0 12px 16px;position:relative;z-index:5}
+.player-nav-wrap button,.profile-trigger{border:1px solid #5366a1;background:#17234b;color:#fff;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.player-nav-wrap button:hover,.profile-trigger:hover{background:#263b78}
+.profile-area{position:absolute;right:18px;top:18px;z-index:20}
+.profile-trigger{background:linear-gradient(100deg,#126b9b,#6042a6);max-width:220px}
+.profile-menu{display:none;position:absolute;right:0;top:46px;width:220px;padding:8px;background:#111936;border:1px solid #5268ff;border-radius:13px;box-shadow:0 12px 35px #0009}
+.profile-menu.open{display:grid;gap:5px}
+.profile-menu button{background:#1d2b55;color:#fff;border:0;border-radius:8px;padding:11px;text-align:left;cursor:pointer}
+.player-modal{width:min(720px,calc(100vw - 32px));max-height:min(88vh,780px);overflow:auto;padding:26px 28px 22px}
+.player-modal h2{margin-top:0}.player-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:16px 0}
+.player-stat{background:#1b2a55;border:1px solid #3b508c;border-radius:12px;padding:13px}
+.player-stat strong{display:block;font-size:22px;color:#80eaff;margin-top:5px}
+.player-actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}
+.player-actions button,.player-modal button{border:0;border-radius:9px;padding:10px 13px;background:#3155a5;color:white;font-weight:700;cursor:pointer}
+.player-modal input{width:100%;padding:11px;border-radius:9px;border:1px solid #5366a1;background:#202b50;color:#fff;margin:7px 0}
+.player-list{padding:0;list-style:none}.player-list li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-bottom:1px solid #34446f;color:#e8edff}
+.player-muted{color:#bdcafa;line-height:1.5}.player-message{min-height:22px;color:#ffdc85}
+/* Friends screen layout */
+.friends-intro{margin:0 0 14px;color:#bdcafa;line-height:1.45}
+.friends-id-card{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;margin:0 0 18px;border:1px solid #405a9c;border-radius:13px;background:linear-gradient(120deg,#172b58,#20204b)}
+.friends-id-card small{display:block;color:#bdcafa;font-size:12px;margin-bottom:4px}
+.friends-id-card strong{font-size:18px;letter-spacing:.5px;color:#8cecff;overflow-wrap:anywhere}
+.friends-id-card button{flex:0 0 auto;padding:8px 12px!important}
+.friend-search{padding:16px;border:1px solid #344b83;border-radius:13px;background:#101d3d;margin-bottom:18px}
+.friend-search label{display:block;font-weight:700;margin-bottom:7px}
+.friend-search-row{display:flex;gap:9px;align-items:center}
+.friend-search-row input{flex:1;min-width:0;margin:0}
+.friend-search-row button{white-space:nowrap}
+.friends-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.friends-section{min-width:0;padding:14px;border:1px solid #344b83;border-radius:13px;background:#101a37}
+.friends-section h3{font-size:16px;margin:0 0 10px}
+.friends-section .player-list{margin:0}
+.friends-section .player-list li{padding:9px 2px;flex-wrap:wrap}
+.friends-empty{color:#aebfe9;font-size:13px;padding:8px 2px}
+@media(max-width:600px){.player-modal{padding:20px 16px}.friends-id-card{align-items:flex-start;flex-direction:column}.friend-search-row{align-items:stretch;flex-direction:column}.friend-search-row button{width:100%}.friends-columns{grid-template-columns:1fr}}
+.badge-chip{display:inline-block;margin:3px;padding:5px 8px;border-radius:20px;background:#3b326f;border:1px solid #8673d5;font-size:12px}
+@media(max-width:650px){.profile-area{position:static;display:flex;justify-content:center;margin:0 0 12px}.profile-menu{right:50%;transform:translateX(50%)}.player-nav-wrap{padding-bottom:12px}.player-nav-wrap button{padding:9px 11px;font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -816,11 +856,22 @@ footer {
     <p class="subtitle">Your universe of games. One place. Endless fun.</p>
 </header>
 
+<div class="profile-area">
+    <button class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">👤 My Profile ▾</button>
+    <div class="profile-menu" id="profileMenu">
+        <button onclick="openPlayerModal('profile')">👤 Profile</button>
+        <button onclick="openPlayerModal('rewards')">🪙 Rewards & Streak</button>
+        <button onclick="openPlayerModal('achievements')">🏅 Achievements</button>
+        <button onclick="openPlayerModal('settings')">⚙️ Account Settings</button>
+        <button onclick="playerSignOut()">🚪 Sign Out</button>
+    </div>
+</div>
 <nav>
     <button onclick="showHome()">🏠 Home</button>
     <button onclick="scrollToGames()">🎮 All Games</button>
     <button onclick="scrollToFeatured()">⭐ Featured</button>
-    <button id="rewardsNavButton" onclick="toggleRewards()">🏆 Rewards</button>
+    <button onclick="openPlayerModal('leaderboard')">🏆 Leaderboard</button>
+    <button onclick="openPlayerModal('friends')">👥 Friends</button>
     <button onclick="openOwnerLogin()">👑 Owner Login</button>
 </nav>
 
@@ -935,6 +986,14 @@ footer {
                     onclick="closeRewards()">Close</button>
         </section>
     </div>
+
+
+<div id="playerModal" class="modal-backdrop" aria-hidden="true" onclick="if(event.target===this) closePlayerModal()">
+<section class="modal-panel player-modal" role="dialog" aria-modal="true" aria-labelledby="playerModalTitle">
+<div class="modal-heading-row"><h2 id="playerModalTitle">👤 Player</h2><button class="back-button modal-close" onclick="closePlayerModal()" aria-label="Close">✕</button></div>
+<div id="playerModalContent"><p class="player-muted">Loading player data…</p></div>
+<p id="playerMessage" class="player-message" aria-live="polite"></p>
+</section></div>
 
 <div id="ownerLoginModal" class="modal-backdrop" aria-hidden="true" onclick="if(event.target === this) closeOwnerLogin()">
     <section class="modal-panel">
@@ -1083,100 +1142,235 @@ function safeURL(value) {
     }
 }
 
-/* REWARDS */
+/* PLAYER ACCOUNT + CLOUD REWARDS */
+let playerUser = null;
+let playerProfile = null;
+let playerWallet = null;
+let playerStreak = null;
+let playerModalMode = "profile";
 
-function getRewards() {
-    try {
-        return JSON.parse(localStorage.getItem("gamehub_rewards")) || {
-            points: 0, streak: 0, lastVisit: "", playedToday: []
-        };
-    } catch {
-        return {points:0, streak:0, lastVisit:"", playedToday:[]};
-    }
+function getRewards(){return {points:Number(playerWallet?.balance||0),streak:Number(playerStreak?.current_streak||0)};}
+function updateRewardUI(){
+ const r=getRewards();
+ document.getElementById("pointsCount").textContent=r.points;
+ document.getElementById("streakCount").textContent=`${r.streak} days`;
+ document.getElementById("rewardLevel").textContent=`⭐ Level ${playerProfile?.level||1}`;
+ document.getElementById("rewardDetails").textContent=`${r.points} coins • ${r.streak}-day streak`;
+ document.getElementById("nextReward").textContent="Claim your daily reward from My Profile → Rewards & Streak.";
 }
+function saveRewards(){updateRewardUI();}
+function awardDailyVisit(){updateRewardUI();}
+function awardGamePlay(){/* Game clicks are not trusted proof of completion; no coins are granted here. */}
+function toggleRewards(){openPlayerModal("rewards");}
+function openRewards(){openPlayerModal("rewards");}
+function closeRewards(){closePlayerModal();}
 
-function saveRewards(r) {
-    localStorage.setItem("gamehub_rewards", JSON.stringify(r));
-    updateRewardUI();
+function toggleProfileMenu(){
+ const menu=document.getElementById("profileMenu");
+ menu.classList.toggle("open");
 }
-
-function updateRewardUI() {
-    const r = getRewards();
-    document.getElementById("pointsCount").textContent = r.points;
-    document.getElementById("streakCount").textContent = `${r.streak} days`;
-
-    let level = "🎮 Rookie";
-    if (r.points >= 1000) level = "👑 Legend";
-    else if (r.points >= 500) level = "💎 Master";
-    else if (r.points >= 200) level = "🔥 Pro";
-    else if (r.points >= 50) level = "🧭 Explorer";
-
-    document.getElementById("rewardLevel").textContent = level;
-    document.getElementById("rewardDetails").textContent =
-        `${r.points} points • ${r.streak}-day streak`;
-
-    const thresholds = [50, 200, 500, 1000];
-    const next = thresholds.find(n => r.points < n);
-    document.getElementById("nextReward").textContent =
-        next ? `${next-r.points} points until the next level!`
-             : "You've reached the highest reward level!";
-
+document.addEventListener("click",e=>{
+ const area=document.querySelector(".profile-area");
+ if(area&&!area.contains(e.target)) document.getElementById("profileMenu")?.classList.remove("open");
+});
+async function loadPlayerData(){
+ let authResult;
+ try {
+  authResult = await db.auth.getUser();
+ } catch (e) {
+  console.error("Supabase authentication request failed:", e);
+  const message = document.getElementById("playerMessage");
+  if (message) message.textContent = `Could not contact Supabase: ${e.message || e}. Check your internet connection and Supabase URL.`;
+  return false;
+ }
+ const user = authResult?.data?.user;
+ const authError = authResult?.error;
+ if (authError) {
+  // Do not redirect on network/auth-server errors: index.html could otherwise
+  // see the cached session and send the browser straight back here forever.
+  console.error("Supabase auth error:", authError);
+  const message = document.getElementById("playerMessage");
+  if (message) message.textContent = `Could not verify your login with Supabase: ${authError.message || "Unknown authentication error"}. Check your connection, then refresh.`;
+  return false;
+ }
+ if (!user) {
+  // No valid signed-in user: return to the login page. index.html also checks
+  // getUser(), so an expired cached session will not create a redirect loop.
+  location.replace("index.html");
+  return false;
+ }
+ playerUser=user;
+ let results;
+ try {
+  results = await Promise.all([
+   db.from("player_profiles").select("*").eq("user_id",user.id).maybeSingle(),
+   db.from("player_wallets").select("*").eq("user_id",user.id).maybeSingle(),
+   db.from("player_streaks").select("*").eq("user_id",user.id).maybeSingle()
+  ]);
+ } catch (e) {
+  console.error("Player database request failed:", e);
+  const message = document.getElementById("playerMessage");
+  if (message) message.textContent = `Could not load player data: ${e.message || e}`;
+  return false;
+ }
+ const [p,w,s] = results;
+ const dbError = p.error || w.error || s.error;
+ if(dbError){
+  console.error("Player setup database error:", dbError);
+  const message = document.getElementById("playerMessage");
+  if (message) message.textContent = `Supabase database error: ${dbError.message || dbError.details || "Check table permissions and run the SQL setup."}`;
+  return false;
+ }
+ playerProfile=p.data;playerWallet=w.data;playerStreak=s.data;
+ if(!playerProfile || !playerWallet || !playerStreak){
+  const missing = [!playerProfile && "player profile", !playerWallet && "wallet", !playerStreak && "streak record"].filter(Boolean).join(", ");
+  const message = document.getElementById("playerMessage");
+  if (message) message.textContent = `Your account is missing: ${missing}. Run the supplied repair SQL in Supabase, then refresh.`;
+  return false;
+ }
+ const trigger=document.getElementById("profileTrigger");
+ if (trigger) trigger.textContent=`👤 ${playerProfile.display_name||"My Profile"} ▾`;
+ updateRewardUI();return true;
 }
-
-function awardDailyVisit() {
-    const r = getRewards();
-    const t = today();
-
-    if (r.lastVisit === t) return;
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate()-1);
-    const y = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,"0")}-${String(yesterday.getDate()).padStart(2,"0")}`;
-
-    r.streak = r.lastVisit === y ? r.streak + 1 : 1;
-    r.points += 10;
-    r.lastVisit = t;
-
-    if (r.streak % 7 === 0) r.points += 25;
-
-    r.playedToday = [];
-    saveRewards(r);
+async function claimDailyReward(){
+ const {data,error}=await db.rpc("claim_daily_reward");
+ if(error) throw error;
+ await loadPlayerData();
+ return data;
 }
-
-function toggleRewards() {
-    const modal = document.getElementById("rewardsModal");
-    const isOpen = modal.style.display === "flex";
-    if (isOpen) closeRewards();
-    else openRewards();
+function openPlayerModal(mode){
+ playerModalMode=mode;
+ document.getElementById("profileMenu")?.classList.remove("open");
+ const modal=document.getElementById("playerModal");
+ modal.style.display="flex";modal.setAttribute("aria-hidden","false");
+ document.body.classList.add("modal-open");
+ renderPlayerModal();
 }
-
-function openRewards() {
-    const modal = document.getElementById("rewardsModal");
-    modal.style.display = "flex";
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-    updateRewardUI();
-    modal.querySelector(".modal-close").focus();
+function closePlayerModal(){
+ const modal=document.getElementById("playerModal");modal.style.display="none";modal.setAttribute("aria-hidden","true");
+ if(!["ownerLoginModal","gameModal","rewardsModal"].some(id=>document.getElementById(id)?.style.display==="flex"))document.body.classList.remove("modal-open");
 }
-
-function closeRewards() {
-    const modal = document.getElementById("rewardsModal");
-    modal.style.display = "none";
-    modal.setAttribute("aria-hidden", "true");
-    if (document.getElementById("ownerLoginModal").style.display !== "flex" &&
-        document.getElementById("gameModal").style.display !== "flex") {
-        document.body.classList.remove("modal-open");
-    }
+async function renderPlayerModal(){
+ const content=document.getElementById("playerModalContent"),message=document.getElementById("playerMessage");
+ message.textContent="";content.innerHTML='<p class="player-muted">Loading…</p>';
+ const ok=await loadPlayerData();if(!ok){content.innerHTML=`<p class="player-muted">${escapeHTML(message.textContent || "Player data could not be loaded. Check the browser console for details.")}</p>`;return;}
+ const p=playerProfile,w=playerWallet,s=playerStreak;
+ const title=document.getElementById("playerModalTitle");
+ const badges=await db.from("player_badges_public").select("badge_name,emoji").eq("user_id",playerUser.id);
+ const badgeHTML=(badges.data||[]).map(b=>`<span class="badge-chip">${escapeHTML(b.emoji)} ${escapeHTML(b.badge_name)}</span>`).join("")||'<span class="player-muted">No badges earned yet.</span>';
+ if(playerModalMode==="profile"){
+  title.textContent="👤 Player Profile";
+  content.innerHTML=`<h3>${escapeHTML(p.display_name)}</h3><p class="player-muted">Player ID: <strong>${escapeHTML(p.player_id)}</strong></p><div class="player-grid"><div class="player-stat">🪙 Coins<strong>${w.balance}</strong></div><div class="player-stat">🔥 Streak<strong>${s.current_streak} days</strong></div><div class="player-stat">⭐ Level<strong>${p.level}</strong></div><div class="player-stat">✨ XP<strong>${p.xp}</strong></div></div><h3>🏅 Badges</h3>${badgeHTML}<div class="player-actions"><button onclick="openPlayerModal('settings')">Edit profile / Player ID</button></div>`;
+ }else if(playerModalMode==="rewards"){
+  title.textContent="🪙 Rewards & Streak";
+  content.innerHTML=`<div class="player-grid"><div class="player-stat">Wallet<strong>${w.balance} coins</strong></div><div class="player-stat">Current streak<strong>${s.current_streak} days</strong></div><div class="player-stat">Best streak<strong>${s.longest_streak} days</strong></div><div class="player-stat">Next ID unlock<strong>${Math.max(0,5-s.current_streak)} days</strong></div></div><p class="player-muted">Daily login reward: 10 coins. A 5-day streak unlocks your first custom Player ID at no cost. Future changes cost 500 coins and are subject to the cooldown.</p><div class="player-actions"><button onclick="claimDailyFromUI()">🎁 Claim daily reward</button></div><h3>Recent coin activity</h3><ul class="player-list" id="coinHistory"><li>Loading transactions…</li></ul>`;
+  loadCoinHistory();
+ }else if(playerModalMode==="settings"){
+  title.textContent="⚙️ Account Settings";
+  content.innerHTML=`<label>Display name</label><input id="editDisplayName" maxlength="30" value="${escapeHTML(p.display_name)}"><label>Choose custom Player ID</label><input id="customPlayerId" maxlength="18" placeholder="3–18 letters, numbers or underscores"><p class="player-muted">Your generated ID: ${escapeHTML(p.player_id)}. First custom ID is free after a 5-day streak; later changes cost 500 coins.</p><div class="player-actions"><button onclick="savePlayerSettings()">Save display name</button><button onclick="changeCustomPlayerId()">Set custom ID</button></div>`;
+ }else if(playerModalMode==="friends"){
+  title.textContent="👥 Friends";
+  content.innerHTML=`
+   <p class="friends-intro">Connect with other players using their unique Player ID.</p>
+   <div class="friends-id-card"><div><small>Your Player ID · Share this with friends</small><strong>${escapeHTML(p.player_id)}</strong></div><button type="button" onclick="GenUICopyPlayerId()">Copy ID</button></div>
+   <div class="friend-search"><label for="friendLookupId">Find a player</label><div class="friend-search-row"><input id="friendLookupId" maxlength="24" placeholder="Enter your friend's Player ID"><button type="button" onclick="sendFriendRequest()">Send request</button></div></div>
+   <div class="friends-columns">
+    <section class="friends-section"><h3>📨 Friend requests</h3><ul class="player-list" id="friendRequests"><li class="friends-empty">Loading requests…</li></ul></section>
+    <section class="friends-section"><h3>👥 Your friends</h3><ul class="player-list" id="friendsList"><li class="friends-empty">Loading friends…</li></ul></section>
+   </div>`;
+  loadFriends();
+ }else if(playerModalMode==="leaderboard"){
+  title.textContent="🏆 Leaderboards";
+  content.innerHTML=`<h3>🪙 Top coin collectors</h3><ul class="player-list" id="coinLeaders"><li>Loading…</li></ul><h3>🔥 Longest streaks</h3><ul class="player-list" id="streakLeaders"><li>Loading…</li></ul>`;
+  loadLeaderboards();
+ }else if(playerModalMode==="achievements"){
+  title.textContent="🏅 Achievements";
+  content.innerHTML=`<p class="player-muted">Badges are earned through verified account activity.</p>${badgeHTML}<p>More achievements will unlock as you use Game Hub.</p>`;
+ }
 }
-
-function awardGamePlay(game) {
-    const r = getRewards();
-    const key = String(game.id ?? game.name);
-    if (!r.playedToday.includes(key)) {
-        r.playedToday.push(key);
-        r.points += 5;
-        saveRewards(r);
-    }
+async function claimDailyFromUI(){
+ const m=document.getElementById("playerMessage");
+ try{const result=await claimDailyReward();m.textContent=result?.message||"Daily reward processed.";renderPlayerModal();}
+ catch(e){m.textContent=e.message||"Could not claim today's reward.";}
+}
+async function loadCoinHistory(){
+ const ul=document.getElementById("coinHistory");if(!ul)return;
+ const {data,error}=await db.from("player_coin_transactions").select("amount,reason,created_at").order("created_at",{ascending:false}).limit(8);
+ ul.innerHTML=error?'<li>Could not load history.</li>':(data||[]).map(x=>`<li><span>${escapeHTML(x.reason)}</span><strong>${x.amount>0?"+":""}${x.amount}</strong></li>`).join("")||'<li>No transactions yet.</li>';
+}
+async function savePlayerSettings(){
+ const name=document.getElementById("editDisplayName").value.trim();if(name.length<2){document.getElementById("playerMessage").textContent="Display name must be at least 2 characters.";return;}
+ const {error}=await db.from("player_profiles").update({display_name:name}).eq("user_id",playerUser.id);
+ document.getElementById("playerMessage").textContent=error?error.message:"Display name updated.";
+ await loadPlayerData();renderPlayerModal();
+}
+async function changeCustomPlayerId(){
+ const input=document.getElementById("customPlayerId");
+ const button=[...document.querySelectorAll("#playerModalContent button")].find(b=>b.textContent.includes("Set custom ID"));
+ const message=document.getElementById("playerMessage");
+ const id=input?.value.trim() || "";
+ if(!id){message.textContent="Enter a custom Player ID first.";input?.focus();return;}
+ if(button){button.disabled=true;button.textContent="Saving…";}
+ message.textContent="Saving your custom Player ID…";
+ try{
+  const {data,error}=await db.rpc("set_custom_player_id",{requested_id:id});
+  if(error) throw error;
+  await loadPlayerData();
+  const savedId=data?.player_id || id;
+  const note=document.querySelector("#playerModalContent .player-muted");
+  if(note) note.innerHTML=`Your Player ID is now: <strong>${escapeHTML(savedId)}</strong>. Your generated ID was ${escapeHTML(playerProfile?.player_id || "")}.`;
+  if(input) input.value="";
+  message.textContent=data?.message || "Custom Player ID updated successfully.";
+ }catch(error){
+  message.textContent=error?.message || "Could not update your Player ID. Please try again.";
+ }finally{
+  if(button){button.disabled=false;button.textContent="Set custom ID";}
+ }
+}
+async function GenUICopyPlayerId(){
+ const id=playerProfile?.player_id;
+ if(!id)return;
+ try{await navigator.clipboard.writeText(id);document.getElementById("playerMessage").textContent="Player ID copied! Share it with your friends.";}
+ catch(error){document.getElementById("playerMessage").textContent="Copy was unavailable. Select and copy your Player ID manually.";}
+}
+async function sendFriendRequest(){
+ const id=document.getElementById("friendLookupId").value.trim();
+ const {data,error}=await db.rpc("send_player_friend_request",{target_player_id:id});
+ document.getElementById("playerMessage").textContent=error?error.message:(data?.message||"Request sent.");
+}
+async function loadFriends(){
+ const [requests,friends]=await Promise.all([
+  db.from("player_friend_requests").select("id,sender_id,created_at").eq("receiver_id",playerUser.id).eq("status","pending"),
+  db.from("player_friends_public").select("friend_id,display_name,player_id").eq("user_id",playerUser.id)
+ ]);
+ const req=document.getElementById("friendRequests"),fr=document.getElementById("friendsList");
+ if(req)req.innerHTML=requests.error?'<li>Could not load requests.</li>':(requests.data||[]).map(x=>`<li>Player request <button onclick="answerFriendRequest('${x.id}',true)">Accept</button> <button onclick="answerFriendRequest('${x.id}',false)">Decline</button></li>`).join("")||'<li>No pending requests.</li>';
+ if(fr)fr.innerHTML=friends.error?'<li>Could not load friends.</li>':(friends.data||[]).map(x=>`<li>${escapeHTML(x.display_name)} <small>${escapeHTML(x.player_id)}</small></li>`).join("")||'<li>No friends yet.</li>';
+}
+async function answerFriendRequest(id,accept){
+ const {error}=await db.rpc("respond_player_friend_request",{request_id:id,accept_request:accept});
+ document.getElementById("playerMessage").textContent=error?error.message:"Friend request updated.";loadFriends();
+}
+async function loadLeaderboards(){
+ const [coins,streaks]=await Promise.all([
+  db.from("player_coin_leaderboard").select("display_name,player_id,balance,level").limit(10),
+  db.from("player_streak_leaderboard").select("display_name,player_id,current_streak").limit(10)
+ ]);
+ const c=document.getElementById("coinLeaders"),s=document.getElementById("streakLeaders");
+ if(c)c.innerHTML=coins.error?'<li>Leaderboard unavailable.</li>':(coins.data||[]).map((x,i)=>`<li><span>#${i+1} ${escapeHTML(x.display_name)} <small>${escapeHTML(x.player_id)}</small></span><strong>${x.balance} 🪙</strong></li>`).join("")||'<li>No players yet.</li>';
+ if(s)s.innerHTML=streaks.error?'<li>Leaderboard unavailable.</li>':(streaks.data||[]).map((x,i)=>`<li><span>#${i+1} ${escapeHTML(x.display_name)} <small>${escapeHTML(x.player_id)}</small></span><strong>${x.current_streak} 🔥</strong></li>`).join("")||'<li>No players yet.</li>';
+}
+async function playerSignOut(){
+ try {
+  // Local scope clears this browser's Supabase session without depending on
+  // a successful network round-trip to the Auth server.
+  const {error} = await db.auth.signOut({scope:"local"});
+  if (error) console.error("Supabase sign-out warning:", error);
+ } catch (error) {
+  console.error("Supabase sign-out failed:", error);
+ } finally {
+  location.replace("index.html");
+ }
 }
 
 /* ANALYTICS */
@@ -1187,6 +1381,7 @@ async function recordEvent(type, game = null) {
             event_type: type,
             game_id: game?.id == null ? null : String(game.id),
             game_name: game?.name || null,
+            name: playerProfile?.display_name || "Guest",
             visitor_key: visitorKey
         });
         if (error) console.warn("Analytics event:", error.message);
@@ -1364,6 +1559,8 @@ async function ownerLogin(event) {
         return;
     }
 
+    // Explicitly enable owner mode for this tab after successful owner login.
+    sessionStorage.removeItem("gamehub_owner_mode_logged_out");
     isOwner = true;
     closeOwnerLogin();
     document.getElementById("ownerPanel").hidden = false;
@@ -1373,19 +1570,27 @@ async function ownerLogin(event) {
 }
 
 async function ownerLogout() {
-    await db.auth.signOut();
+    // Owner mode is separate from the player's Supabase login.
+    // Hide the dashboard without signing out the player account.
     isOwner = false;
+    sessionStorage.setItem("gamehub_owner_mode_logged_out", "true");
     document.getElementById("ownerPanel").hidden = true;
-    alert("You have logged out.");
+    const analytics = document.getElementById("ownerAnalytics");
+    if (analytics) analytics.replaceChildren();
+    const ownerGames = document.getElementById("ownerGames");
+    if (ownerGames) ownerGames.replaceChildren();
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 async function checkSession() {
-    const {data} = await db.auth.getUser();
-    if (data.user?.id === OWNER_ID) {
-        isOwner = true;
-        document.getElementById("ownerPanel").hidden = false;
-        await loadOwnerAnalytics();
-    }
+    const {data, error} = await db.auth.getUser();
+    const ownerModeWasClosed = sessionStorage.getItem("gamehub_owner_mode_logged_out") === "true";
+    const isOwnerAccount = !error && data.user?.id === OWNER_ID;
+
+    isOwner = Boolean(isOwnerAccount && !ownerModeWasClosed);
+    document.getElementById("ownerPanel").hidden = !isOwner;
+
+    if (isOwner) await loadOwnerAnalytics();
 }
 
 /* OWNER GAME MANAGEMENT */
@@ -1582,7 +1787,7 @@ async function loadOwnerAnalytics() {
     }
 
     const {data, error} = await db.from("game_hub_events")
-        .select("game_id,game_name,visitor_key,event_type")
+        .select("game_id,game_name,visitor_key,event_type,name")
         .eq("event_type", "play");
 
     if (error) {
@@ -1596,10 +1801,11 @@ async function loadOwnerAnalytics() {
     (data || []).forEach(e => {
         const key = e.game_id || e.game_name || "unknown";
         if (!totals[key]) totals[key] = {
-            name: e.game_name || "Unknown game", plays: 0, visitors: new Set()
+            name: e.game_name || "Unknown game", plays: 0, visitors: new Set(), players: new Set()
         };
         totals[key].plays++;
         if (e.visitor_key) totals[key].visitors.add(e.visitor_key);
+        if (e.name) totals[key].players.add(e.name);
     });
 
     host.replaceChildren();
@@ -1615,7 +1821,8 @@ async function loadOwnerAnalytics() {
         row.className = "owner-game";
         const info = document.createElement("div");
         info.innerHTML = `<strong>${escapeHTML(item.name)}</strong>
-            <br><small>${item.plays} play clicks · ${item.visitors.size} browser identifiers</small>`;
+            <br><small>${item.plays} play clicks · ${item.visitors.size} browsers</small>
+            <br><small>Players: ${escapeHTML([...item.players].join(", ") || "Unknown")}</small>`;
         row.appendChild(info);
         host.appendChild(row);
     });
@@ -1675,7 +1882,8 @@ document.addEventListener("keydown", event => {
 /* STARTUP */
 
 async function init() {
-    awardDailyVisit();
+    const playerReady = await loadPlayerData();
+    if (!playerReady) return;
     updateRewardUI();
     await loadGames();
     await checkSession();
