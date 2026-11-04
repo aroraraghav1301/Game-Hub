@@ -1,86 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101735">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1b4a">
 <title>Player Account | Raghav's Game Hub</title>
-<link rel="icon" href="icon.png">
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at top,#263c83,#101735 55%,#080b19);font-family:Arial,sans-serif;color:#fff}
-.account{width:min(100%,470px);padding:30px;background:#111936;border:1px solid #5268ff;border-radius:22px;box-shadow:0 15px 55px #0008}
-h1{text-align:center;color:#80eaff;text-shadow:0 0 18px #00bfff;margin:0 0 8px}.sub{text-align:center;color:#bdcafa;line-height:1.5;margin:0 0 24px}
-label{display:block;margin:15px 0 7px;font-weight:700}input{width:100%;padding:13px;background:#202b50;border:1px solid #5366a1;border-radius:10px;color:white;font-size:16px}input:focus{outline:2px solid #48e5ff}
-button{width:100%;margin-top:20px;padding:14px;border:0;border-radius:11px;background:linear-gradient(90deg,#00c8ff,#7855ff);color:white;font-size:17px;font-weight:bold;cursor:pointer}button:disabled{opacity:.6;cursor:wait}
-.switch{margin-top:18px;text-align:center;color:#c5d3f6}.switch button{width:auto;margin:0;padding:0;background:none;color:#80eaff;text-decoration:underline;font-size:inherit}
-#message{min-height:24px;color:#ffdc85;text-align:center;line-height:1.5}.privacy{font-size:12px;line-height:1.6;color:#aeb9d6;text-align:center;margin-top:20px}
-</style>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script>document.documentElement.className = "js";</script>
+<link rel="stylesheet" href="css/hub.css">
 </head>
-<body>
-<main class="account">
-<h1>🎮 Raghav's Game Hub</h1>
-<p class="sub" id="subtitle">Create your player account and get your own Player ID.</p>
-<form id="accountForm">
-<div id="nameWrap"><label for="displayName">Player name</label><input id="displayName" maxlength="30" autocomplete="nickname" placeholder="How should players see you?"></div>
-<label for="email">Email address</label><input id="email" type="email" autocomplete="email" required maxlength="254">
-<label for="password">Password</label><input id="password" type="password" minlength="8" autocomplete="new-password" required>
-<button id="submitBtn" type="submit">Create account 🚀</button>
-</form>
-<p id="message" role="status" aria-live="polite"></p>
-<p class="switch"><span id="switchText">Already have an account?</span> <button type="button" id="switchMode">Log in</button></p>
-<p class="privacy">Your email is used for sign-in and is not shown on public profiles. Choose a display name that does not reveal private information.</p>
-</main>
+<body class="auth-body">
+<div class="auth-shell">
+  <aside class="auth-aside">
+    <img class="logo" src="icon-192.png" width="92" height="92" alt="">
+    <h1>Raghav's <b>Game Hub</b></h1>
+    <p class="lead">Your universe of games. One place. Endless fun.</p>
+    <ul class="perks" aria-label="What you get">
+      <li><span aria-hidden="true">🎮</span>Play a growing library of games</li>
+      <li><span aria-hidden="true">🪙</span>Earn coins with a daily reward</li>
+      <li><span aria-hidden="true">🔥</span>Build your streak, unlock your own Player ID</li>
+      <li><span aria-hidden="true">🏆</span>Add friends and climb the leaderboards</li>
+    </ul>
+  </aside>
+
+  <main class="auth-main" id="main">
+    <div class="auth-card">
+      <div class="mode-tabs" role="tablist" aria-label="Account mode">
+        <button type="button" role="tab" id="tabSignup" aria-selected="true" data-mode="signup">Create account</button>
+        <button type="button" role="tab" id="tabLogin" aria-selected="false" data-mode="login">Log in</button>
+      </div>
+      <h2 id="formTitle">Join the fun 🚀</h2>
+      <p class="sub" id="subtitle">Create your player account and get your own Player ID.</p>
+
+      <form id="accountForm" novalidate>
+        <div id="nameWrap" class="field"><label for="displayName">Player name</label><input id="displayName" maxlength="30" autocomplete="nickname" placeholder="How should players see you?"></div>
+        <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" required maxlength="254"></div>
+        <div class="field"><label for="password">Password</label><input id="password" type="password" minlength="8" autocomplete="new-password" required></div>
+        <label class="show-pass"><input type="checkbox" id="showPass"> Show password</label>
+        <button id="submitBtn" class="btn btn-play" type="submit">Create account 🚀</button>
+      </form>
+      <p id="message" class="form-message" role="status" aria-live="polite"></p>
+      <p class="privacy">Your email is used for sign-in and is not shown on public profiles. Choose a display name that does not reveal private information.</p>
+    </div>
+  </main>
+</div>
+<noscript><p class="page-notice" style="margin:16px;">Game Hub needs JavaScript to sign you in. Please enable JavaScript.</p></noscript>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const db = window.supabase.createClient(
- "https://wpdqxooopwivbzazonca.supabase.co",
- "sb_publishable_9wI9m5g9qLnjMtJzPGM5pA_KeJ36NWD"
-);
-const form=document.getElementById("accountForm"), message=document.getElementById("message");
-let mode="signup";
-function setMode(next){
- mode=next; const signup=mode==="signup";
- document.getElementById("nameWrap").hidden=!signup;
- document.getElementById("displayName").required=signup;
- document.getElementById("password").autocomplete=signup?"new-password":"current-password";
- document.getElementById("subtitle").textContent=signup?"Create your player account and get your own Player ID.":"Welcome back. Log in to continue your Game Hub journey.";
- document.getElementById("submitBtn").textContent=signup?"Create account 🚀":"Log in 🎮";
- document.getElementById("switchText").textContent=signup?"Already have an account?":"New to Game Hub?";
- document.getElementById("switchMode").textContent=signup?"Log in":"Create account";
- message.textContent="";
+if (!window.supabase) {
+  document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>');
 }
-document.getElementById("switchMode").addEventListener("click",()=>setMode(mode==="signup"?"login":"signup"));
-(async()=>{
- try {
-  // Validate the session with Supabase instead of trusting a possibly stale
-  // locally cached session. This prevents index.html <-> games.html redirect loops.
-  const { data, error } = await db.auth.getUser();
-  if (!error && data?.user) location.replace("games.html");
-  else if (error) console.warn("Could not validate existing session:", error.message);
- } catch (error) {
-  console.error("Could not check existing Supabase session:", error);
- }
-})();
-form.addEventListener("submit",async e=>{
- e.preventDefault(); const btn=document.getElementById("submitBtn");
- btn.disabled=true; message.textContent=mode==="signup"?"Creating your account…":"Signing in…";
- try{
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-  if(mode==="signup"){
-   const display_name=document.getElementById("displayName").value.trim();
-   if(display_name.length<2) throw new Error("Player name must be at least 2 characters.");
-   const {data,error}=await db.auth.signUp({email,password,options:{data:{display_name}}});
-   if(error) throw error;
-   if(data.session){message.textContent="Account created! Opening your hub…";location.replace("games.html");}
-   else message.textContent="Account created. Check your email for the verification link, then log in here.";
-  }else{
-   const {error}=await db.auth.signInWithPassword({email,password});
-   if(error) throw error;
-   location.replace("games.html");
-  }
- }catch(err){console.error(err);message.textContent=err.message||"Something went wrong. Please try again.";}
- finally{btn.disabled=false;}
-});
 </script>
-</body></html>
+<script src="js/account.js"></script>
+</body>
+</html>

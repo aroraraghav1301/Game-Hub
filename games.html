@@ -1,1902 +1,248 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1b4a">
+<meta name="description" content="Raghav's Game Hub - play games, earn coins, keep your daily streak and climb the leaderboards.">
 <title>Raghav's Game Hub</title>
-<link rel="icon" type="image/png" href="/icon.png">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-    min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #fff;
-    background:
-        radial-gradient(circle at 15% 20%, #193f9b 0%, transparent 25%),
-        radial-gradient(circle at 85% 75%, #451574 0%, transparent 25%),
-        linear-gradient(135deg, #020617, #071442, #050b24);
-    overflow-x: hidden;
-}
-
-.stars {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image:
-        radial-gradient(2px 2px at 10% 20%, white, transparent),
-        radial-gradient(2px 2px at 25% 70%, white, transparent),
-        radial-gradient(1px 1px at 40% 35%, white, transparent),
-        radial-gradient(2px 2px at 55% 80%, white, transparent),
-        radial-gradient(1px 1px at 70% 15%, white, transparent),
-        radial-gradient(2px 2px at 85% 50%, white, transparent),
-        radial-gradient(1px 1px at 95% 85%, white, transparent);
-    background-size: 300px 300px;
-    animation: starsMove 25s linear infinite;
-}
-
-@keyframes starsMove {
-    from { transform: translateY(0); }
-    to { transform: translateY(300px); }
-}
-
-header {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    padding: 55px 20px 20px;
-}
-
-.logo {
-    font-family: "Cooper Black", Georgia, serif;
-    font-size: clamp(36px, 7vw, 78px);
-    line-height: 1.15;
-    letter-spacing: .02em;
-    background: linear-gradient(90deg, #93c5fd, #ffffff, #c4b5fd, #93c5fd);
-    background-size: 250% auto;
-    color: #a5b4fc;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 10px #3d78ff88);
-    animation: logoGlow 3.5s ease-in-out infinite, titleShimmer 6s linear infinite;
-}
-
-/* Keep the gamepad icon separate from the gradient-clipped title text. */
-.logo-icon {
-    display: inline-block;
-    margin-right: .18em;
-    background: none;
-    -webkit-background-clip: initial;
-    background-clip: initial;
-    -webkit-text-fill-color: initial;
-    color: #a5b4fc;
-    filter: drop-shadow(0 0 10px #3d78ff88);
-    vertical-align: .02em;
-}
-
-@keyframes logoGlow {
-    0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 8px #3d78ff66); }
-    50% { transform: translateY(-3px) scale(1.025); filter: drop-shadow(0 0 22px #3d78ffcc); }
-}
-
-@keyframes titleShimmer {
-    to { background-position: 250% center; }
-}
-
-.subtitle {
-    margin-top: 15px;
-    color: #bbc8f7;
-    font-size: clamp(15px, 2vw, 20px);
-}
-
-nav {
-    position: relative;
-    z-index: 3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 20px auto 30px;
-    padding: 0 14px;
-}
-
-nav button {
-    border: 1px solid #4169cf;
-    background: rgba(13, 30, 76, .92);
-    color: white;
-    padding: 11px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: .25s;
-    font-weight: 600;
-}
-
-nav button:hover {
-    background: #214db2;
-    transform: translateY(-3px);
-}
-
-#rewardsNavButton {
-    border-color: #fbbf24;
-    background: linear-gradient(135deg, #805b18, #b7791f);
-    box-shadow: 0 0 18px #f59e0b33;
-}
-
-#rewardsNavButton:hover {
-    background: linear-gradient(135deg, #a66c12, #d99b27);
-}
-
-main {
-    position: relative;
-    z-index: 2;
-}
-
-.search-area {
-    display: flex;
-    justify-content: center;
-    padding: 0 20px;
-    margin-bottom: 35px;
-}
-
-#search {
-    width: min(650px, 100%);
-    padding: 17px 24px;
-    border-radius: 35px;
-    border: 2px solid #3268dc;
-    outline: none;
-    background: rgba(7, 19, 58, .95);
-    color: white;
-    font-size: 18px;
-}
-
-#search::placeholder { color: #94a6d6; }
-
-.featured {
-    width: min(1100px, 92%);
-    margin: 0 auto 50px;
-    padding: 30px;
-    border-radius: 28px;
-    text-align: center;
-    background: linear-gradient(135deg, rgba(23,58,139,.8), rgba(31,13,75,.85));
-    border: 2px solid #315ec8;
-    box-shadow: 0 15px 50px #0007;
-}
-
-.featured-label {
-    display: inline-block;
-    background: #ff7518;
-    padding: 7px 17px;
-    border-radius: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.featured-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
-    gap: 18px;
-    margin-top: 20px;
-    text-align: center;
-}
-
-.featured-item {
-    padding: 20px;
-    border-radius: 18px;
-    background: #081434dd;
-    border: 1px solid #5274df;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    min-height: 320px;
-    height: 100%;
-    box-sizing: border-box;
-    transition: transform .25s, border-color .25s, box-shadow .25s;
-}
-
-.featured-item:hover {
-    transform: translateY(-5px);
-    border-color: #8ba9ff;
-    box-shadow: 0 12px 28px #0005;
-}
-
-.featured-icon {
-    font-size: 48px;
-    min-height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-}
-
-.featured-item h3 {
-    margin: 8px 0;
-    min-height: 2.4em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.featured-item p {
-    color: #bdcafa;
-    line-height: 1.5;
-    margin: 0 0 20px;
-    flex: 1 0 auto;
-}
-
-.games {
-    width: min(1200px, 92%);
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-    gap: 24px;
-    padding-bottom: 60px;
-}
-
-.game-card {
-    background: linear-gradient(150deg, rgba(16,35,83,.96), rgba(7,15,42,.97));
-    border: 1px solid #315cc4;
-    border-radius: 22px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 12px 35px #0006;
-    transition: transform .3s, border-color .3s, box-shadow .3s;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    height: 100%;
-}
-
-.game-card:hover {
-    transform: translateY(-6px);
-    border-color: #5683ee;
-    box-shadow: 0 18px 45px #2664ff44;
-}
-
-.game-icon {
-    font-size: 64px;
-    margin-bottom: 14px;
-}
-
-.game-card h2 {
-    margin: 0 0 12px;
-    min-height: 2.4em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-wrap: anywhere;
-}
-
-.game-card p {
-    color: #b8c7eb;
-    line-height: 1.5;
-    min-height: 48px;
-    margin-bottom: 20px;
-    flex: 1 0 auto;
-    overflow-wrap: anywhere;
-}
-
-.play-button,
-.owner-button,
-.danger-button,
-.edit-button,
-.back-button {
-    border: none;
-    padding: 12px 22px;
-    border-radius: 25px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: .25s;
-}
-
-.play-button {
-    background: #ff7518;
-    margin-top: auto;
-    align-self: center;
-    min-width: 168px;
-}
-
-.play-button:hover {
-    background: #ff963d;
-    transform: translateY(-3px);
-}
-
-.game-card .play-button,
-.featured-item .play-button {
-    margin-top: auto;
-    align-self: center;
-}
-
-.owner-button { background: #5636c9; }
-.owner-button:hover { background: #714ff0; }
-
-.danger-button { background: #d62d3a; }
-.danger-button:hover { background: #f04452; }
-
-.edit-button { background: #1766bd; }
-.edit-button:hover { background: #2786e9; }
-
-.back-button { background: #34466f; }
-
-.tag-row {
-    display: flex;
-    gap: 7px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 0 0 18px;
-}
-
-.tag-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #dbeafe;
-    background: #244783;
-    border: 1px solid #5274df;
-}
-
-.hub-stats {
-    width: min(1100px, 92%);
-    margin: 0 auto 22px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.stat-card,
-.reward-strip {
-    background: linear-gradient(145deg, rgba(16,35,83,.9), rgba(31,18,75,.92));
-    border: 1px solid #4169cf;
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 12px 32px #0005;
-    backdrop-filter: blur(12px);
-}
-
-.stat-card {
-    text-align: center;
-}
-
-.stat-card span {
-    display: block;
-    color: #bdcafa;
-    margin-bottom: 8px;
-    font-size: 14px;
-}
-
-.stat-card strong {
-    display: block;
-    font-size: 27px;
-    color: #fff;
-    overflow-wrap: anywhere;
-}
-
-.reward-strip {
-    width: min(1100px, 92%);
-    margin: 0 auto 35px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.reward-strip p {
-    color: #b9c8ee;
-    margin-top: 5px;
-    line-height: 1.5;
-}
-
-.no-results {
-    display: none;
-    text-align: center;
-    color: #bdcafa;
-    padding: 30px 15px;
-}
-
-.section-heading {
-    text-align: center;
-    font-size: clamp(24px, 4vw, 34px);
-    margin: 0 0 24px;
-}
-
-#gamePlayer {
-    display: none;
-    position: relative;
-    z-index: 2;
-    width: min(1200px, 94%);
-    margin: 20px auto 50px;
-}
-
-.player-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 15px;
-}
-
-#gameFrame {
-    width: 100%;
-    height: min(75vh, 800px);
-    min-height: 450px;
-    border: 1px solid #4169cf;
-    border-radius: 16px;
-    background: #fff;
-}
-
-.owner-panel,
-.modal-panel {
-    width: min(1000px, 92%);
-    margin: 30px auto;
-    padding: 25px;
-    border-radius: 22px;
-    background: #081434ee;
-    border: 1px solid #4169cf;
-    box-shadow: 0 12px 40px #0006;
-}
-
-.owner-panel h2,
-.modal-panel h2 {
-    margin-bottom: 18px;
-}
-
-.owner-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.owner-game {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding: 15px;
-    border: 1px solid #2b477f;
-    border-radius: 14px;
-    margin: 10px 0;
-    background: #0d1e43;
-}
-
-.owner-game-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    margin-bottom: 15px;
-}
-
-.field label {
-    color: #dbeafe;
-    font-weight: 700;
-}
-
-.field input,
-.field textarea,
-.field select {
-    width: 100%;
-    border: 1px solid #4169cf;
-    border-radius: 10px;
-    padding: 12px;
-    background: #07122e;
-    color: #fff;
-    font: inherit;
-}
-
-.field textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.field small {
-    color: #a9bce9;
-    line-height: 1.5;
-}
-
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    background: rgba(0, 0, 0, .58);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.modal-panel {
-    max-height: min(90vh, calc(100dvh - 40px));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable;
-    margin: auto;
-}
-
-body.modal-open { overflow: hidden; }
-
-#ownerLoginModal { z-index: 10002; }
-#ownerLoginModal .modal-panel {
-    width: min(430px, 100%);
-    max-height: min(78vh, calc(100dvh - 32px));
-    padding: 22px;
-    border-radius: 18px;
-}
-#ownerLoginModal .modal-panel h2 { font-size: 22px; margin-bottom: 15px; }
-#ownerLoginModal .field { margin-bottom: 12px; }
-#ownerLoginModal .field input { padding: 10px 12px; }
-#ownerLoginModal .owner-actions { margin-bottom: 0; }
-
-#rewardsModal { z-index: 10001; }
-#rewardsModal .rewards-modal-panel {
-    width: min(540px, 100%);
-    padding: 25px;
-}
-.modal-heading-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-.modal-heading-row h2 { margin-bottom: 12px; }
-#rewardsModal p { color: #c5d3f6; line-height: 1.6; margin: 8px 0; }
-#rewardsModal #rewardLevel { font-size: 20px; font-weight: 700; color: white; }
-.modal-close { min-width: 40px; min-height: 40px; border-radius: 50%; }
-.rewards-close-button { margin-top: 16px; padding: 10px 18px; }
-
-.form-message {
-    margin-top: 12px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
-
-.suggestion-box {
-    width: min(90%, 600px);
-    margin: 40px auto 50px;
-}
-
-#suggestionTrigger {
-    width: 100%;
-    padding: 14px 20px;
-    border: 1px solid #168cff;
-    border-radius: 14px;
-    background: #040786;
-    color: white;
-    box-shadow: 0 0 30px #80808066;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#suggestionForm { display: none; }
-
-.suggestion-box.open #suggestionForm {
-    display: block;
-    margin-top: 12px;
-    padding: 18px;
-    border: 1px solid #168cff;
-    border-radius: 16px;
-    background: rgba(5,20,55,.95);
-    box-shadow: 0 0 20px #0064ff33;
-}
-
-#suggestionText {
-    display: block;
-    width: 100%;
-    min-height: 130px;
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 14px;
-    box-sizing: border-box;
-    border: 1px solid #777;
-    border-radius: 12px;
-    background: #e5e7eb;
-    color: #111827;
-    font-size: 17px;
-    resize: vertical;
-}
-
-.suggestion-field {
-    display: block;
-    width: 100%;
-    margin-bottom: 12px;
-    padding: 12px 14px;
-    border: 1px solid #64748b;
-    border-radius: 10px;
-    background: #e5e7eb;
-    color: #111827;
-    font: inherit;
-}
-
-.suggestion-buttons {
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.suggestion-buttons button {
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#cancelSuggestion {
-    background: #777;
-    color: white;
-    border: none;
-}
-
-#suggestionForm button[type="submit"] {
-    background: white;
-    color: #111;
-    border: none;
-}
-
-#suggestionMessage {
-    margin-top: 12px;
-    line-height: 1.5;
-}
-
-footer {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    padding: 20px;
-    color: #91a6d9;
-}
-
-@media (max-width: 600px) {
-    header { padding-top: 35px; }
-    .featured { padding: 20px 14px; }
-    .games { gap: 16px; }
-    .game-card { padding: 20px; }
-    .hub-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .stat-card strong { font-size: 22px; }
-    .reward-strip { align-items: flex-start; }
-    #gameFrame { min-height: 350px; }
-    .owner-panel { padding: 17px; }
-    .modal-backdrop { padding: 12px; align-items: flex-start; }
-    .modal-panel { width: min(100%, 520px); max-height: calc(100dvh - 24px); padding: 20px; }
-}
-
-/* Modal layering fix: dialogs sit above the navigation and page content. */
-.modal-backdrop {
-    position: fixed !important;
-    inset: 0;
-    z-index: 10000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    overflow-y: auto;
-    background: rgba(0, 0, 0, .58);
-}
-#rewardsModal { z-index: 10001 !important; }
-#ownerLoginModal { z-index: 10002 !important; }
-#rewardsModal .rewards-modal-panel {
-    width: min(540px, 100%);
-    max-height: min(82vh, calc(100dvh - 40px));
-    overflow-y: auto;
-}
-#ownerLoginModal .modal-panel {
-    width: min(430px, 100%);
-    max-height: min(78vh, calc(100dvh - 32px));
-    overflow-y: auto;
-}
-
-
-
-/* Compact game cards: reduce width and especially vertical height. */
-.games {
-    width: min(1200px, 94%);
-    grid-template-columns: repeat(auto-fit, minmax(min(205px, 100%), 1fr));
-    gap: 16px;
-    padding-bottom: 42px;
-    align-items: stretch;
-}
-.game-card {
-    padding: 14px 14px 15px;
-    border-radius: 17px;
-    height: auto;
-    min-height: 0;
-    box-shadow: 0 8px 22px #0005;
-}
-.game-icon {
-    font-size: 44px;
-    line-height: 1.1;
-    margin-bottom: 8px;
-}
-.game-card h2 {
-    font-size: clamp(18px, 1.8vw, 23px);
-    line-height: 1.2;
-    min-height: 0;
-    margin: 0 0 8px;
-}
-.game-card p {
-    font-size: 14px;
-    line-height: 1.35;
-    min-height: 0;
-    margin: 0 0 10px;
-    flex: 0 0 auto;
-}
-.game-card .play-button {
-    min-width: 0;
-    padding: 8px 18px;
-    font-size: 14px;
-    margin-top: auto;
-}
-.game-card .tag,
-.game-card .game-tag {
-    font-size: 11px;
-    padding: 3px 8px;
-}
-.featured {
-    padding: 20px;
-    margin-bottom: 34px;
-}
-.featured-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(205px, 100%), 1fr));
-    gap: 14px;
-    margin-top: 14px;
-}
-.featured-item {
-    padding: 14px;
-    min-height: 0;
-    height: auto;
-    border-radius: 15px;
-}
-.featured-icon {
-    font-size: 40px;
-    min-height: 44px;
-    margin-bottom: 5px;
-}
-.featured-item h3 {
-    font-size: 17px;
-    line-height: 1.2;
-    min-height: 0;
-    margin: 5px 0 7px;
-}
-.featured-item p {
-    font-size: 13px;
-    line-height: 1.35;
-    margin: 0 0 12px;
-    flex: 0 0 auto;
-}
-.featured-item .play-button {
-    min-width: 0;
-    padding: 8px 12px;
-    font-size: 12px;
-    white-space: normal;
-}
-@media (max-width: 600px) {
-    .games { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .game-card { padding: 12px 10px; }
-    .game-icon { font-size: 38px; }
-    .game-card h2 { font-size: 17px; }
-    .game-card p { font-size: 12px; }
-    .game-card .play-button { padding: 8px 12px; font-size: 12px; }
-    .featured { padding: 15px 10px; }
-    .featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .featured-item { padding: 11px 9px; }
-}
-
-
-/* PLAYER SYSTEM */
-.player-nav-wrap{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:0 12px 16px;position:relative;z-index:5}
-.player-nav-wrap button,.profile-trigger{border:1px solid #5366a1;background:#17234b;color:#fff;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
-.player-nav-wrap button:hover,.profile-trigger:hover{background:#263b78}
-.profile-area{position:absolute;right:18px;top:18px;z-index:20}
-.profile-trigger{background:linear-gradient(100deg,#126b9b,#6042a6);max-width:220px}
-.profile-menu{display:none;position:absolute;right:0;top:46px;width:220px;padding:8px;background:#111936;border:1px solid #5268ff;border-radius:13px;box-shadow:0 12px 35px #0009}
-.profile-menu.open{display:grid;gap:5px}
-.profile-menu button{background:#1d2b55;color:#fff;border:0;border-radius:8px;padding:11px;text-align:left;cursor:pointer}
-.player-modal{width:min(720px,calc(100vw - 32px));max-height:min(88vh,780px);overflow:auto;padding:26px 28px 22px}
-.player-modal h2{margin-top:0}.player-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:16px 0}
-.player-stat{background:#1b2a55;border:1px solid #3b508c;border-radius:12px;padding:13px}
-.player-stat strong{display:block;font-size:22px;color:#80eaff;margin-top:5px}
-.player-actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}
-.player-actions button,.player-modal button{border:0;border-radius:9px;padding:10px 13px;background:#3155a5;color:white;font-weight:700;cursor:pointer}
-.player-modal input{width:100%;padding:11px;border-radius:9px;border:1px solid #5366a1;background:#202b50;color:#fff;margin:7px 0}
-.player-list{padding:0;list-style:none}.player-list li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-bottom:1px solid #34446f;color:#e8edff}
-.player-muted{color:#bdcafa;line-height:1.5}.player-message{min-height:22px;color:#ffdc85}
-/* Friends screen layout */
-.friends-intro{margin:0 0 14px;color:#bdcafa;line-height:1.45}
-.friends-id-card{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;margin:0 0 18px;border:1px solid #405a9c;border-radius:13px;background:linear-gradient(120deg,#172b58,#20204b)}
-.friends-id-card small{display:block;color:#bdcafa;font-size:12px;margin-bottom:4px}
-.friends-id-card strong{font-size:18px;letter-spacing:.5px;color:#8cecff;overflow-wrap:anywhere}
-.friends-id-card button{flex:0 0 auto;padding:8px 12px!important}
-.friend-search{padding:16px;border:1px solid #344b83;border-radius:13px;background:#101d3d;margin-bottom:18px}
-.friend-search label{display:block;font-weight:700;margin-bottom:7px}
-.friend-search-row{display:flex;gap:9px;align-items:center}
-.friend-search-row input{flex:1;min-width:0;margin:0}
-.friend-search-row button{white-space:nowrap}
-.friends-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.friends-section{min-width:0;padding:14px;border:1px solid #344b83;border-radius:13px;background:#101a37}
-.friends-section h3{font-size:16px;margin:0 0 10px}
-.friends-section .player-list{margin:0}
-.friends-section .player-list li{padding:9px 2px;flex-wrap:wrap}
-.friends-empty{color:#aebfe9;font-size:13px;padding:8px 2px}
-@media(max-width:600px){.player-modal{padding:20px 16px}.friends-id-card{align-items:flex-start;flex-direction:column}.friend-search-row{align-items:stretch;flex-direction:column}.friend-search-row button{width:100%}.friends-columns{grid-template-columns:1fr}}
-.badge-chip{display:inline-block;margin:3px;padding:5px 8px;border-radius:20px;background:#3b326f;border:1px solid #8673d5;font-size:12px}
-@media(max-width:650px){.profile-area{position:static;display:flex;justify-content:center;margin:0 0 12px}.profile-menu{right:50%;transform:translateX(50%)}.player-nav-wrap{padding-bottom:12px}.player-nav-wrap button{padding:9px 11px;font-size:13px}}
-
-</style>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script>document.documentElement.className = "js";</script>
+<link rel="stylesheet" href="css/hub.css">
 </head>
 <body>
-<div class="stars"></div>
+<a class="skip-link" href="#main">Skip to games</a>
 
-<header>
-    <h1 class="logo"><span class="logo-icon" aria-hidden="true">🎮</span> <span class="logo-text">Raghav's Game Hub</span></h1>
-    <p class="subtitle">Your universe of games. One place. Endless fun.</p>
+<header class="site-header">
+  <div class="container">
+    <div class="header-row">
+      <a class="brand" href="/games" data-route="games"><img src="icon-192.png" width="40" height="40" alt=""><span>Raghav's <b>Game Hub</b></span></a>
+
+      <nav class="site-nav" id="siteNav" aria-label="Main">
+        <ul>
+          <li><button type="button" class="nav-link" data-nav="home">🏠 Home</button></li>
+          <li><button type="button" class="nav-link" data-nav="games">🎮 All Games</button></li>
+          <li><button type="button" class="nav-link" data-nav="featured">⭐ Featured</button></li>
+          <li><button type="button" class="nav-link" data-nav="leaderboard">🏆 Leaderboard</button></li>
+          <li><button type="button" class="nav-link" data-nav="friends">👥 Friends</button></li>
+          <li><button type="button" class="nav-link is-owner" data-nav="owner">👑 Owner Login</button></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button type="button" class="coin-chip" id="coinChip" data-nav="rewards" aria-label="Your coins. Open rewards">🪙 <span id="coinChipValue">0</span></button>
+        <div class="profile-wrap">
+          <button type="button" class="profile-trigger" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu">
+            <span aria-hidden="true">👤</span><span class="pt-name" id="profileName">My Profile</span><span class="pt-caret" aria-hidden="true">▾</span>
+            <span class="sr-only">Profile menu</span>
+          </button>
+          <div class="profile-menu" id="profileMenu">
+            <button type="button" data-player="profile">👤 Profile</button>
+            <button type="button" data-player="rewards">🪙 Rewards &amp; Streak</button>
+            <button type="button" data-player="achievements">🏅 Achievements</button>
+            <button type="button" data-player="settings">⚙️ Account Settings</button>
+            <button type="button" class="is-signout" data-nav="signout">🚪 Sign Out</button>
+          </div>
+        </div>
+        <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu">☰</button>
+      </div>
+    </div>
+  </div>
 </header>
 
-<div class="profile-area">
-    <button class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">👤 My Profile ▾</button>
-    <div class="profile-menu" id="profileMenu">
-        <button onclick="openPlayerModal('profile')">👤 Profile</button>
-        <button onclick="openPlayerModal('rewards')">🪙 Rewards & Streak</button>
-        <button onclick="openPlayerModal('achievements')">🏅 Achievements</button>
-        <button onclick="openPlayerModal('settings')">⚙️ Account Settings</button>
-        <button onclick="playerSignOut()">🚪 Sign Out</button>
+<main id="main">
+  <div id="homePage">
+    <section class="hero" aria-labelledby="heroTitle">
+      <span class="blob blob-1"></span><span class="blob blob-2"></span><span class="blob blob-3"></span>
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <span class="hero-badge">🎮 Play • Earn • Win</span>
+          <h1 id="heroTitle">Your universe of games. <em>One place.</em> Endless fun.</h1>
+          <p class="hero-sub">Jump into your favourite games, keep your daily streak alive, collect coins and climb the leaderboard.</p>
+          <form class="search-form" role="search" id="searchForm" action="#" onsubmit="return false;">
+            <label for="search">Search games, categories or tags</label>
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input id="search" class="search-input" type="search" placeholder="Search games or tags..." autocomplete="off" maxlength="80">
+          </form>
+        </div>
+        <div class="hero-art" aria-hidden="true"><img src="icon-192.png" width="270" height="270" alt=""></div>
+      </div>
+    </section>
+
+    <div class="container stats-wrap">
+      <section class="stats" aria-label="Your Game Hub stats">
+        <div class="stat-card"><span class="stat-label">🎮 Games Available</span><strong class="stat-value" id="gamesCount">0</strong></div>
+        <div class="stat-card s-cyan"><span class="stat-label">🪙 Your Points</span><strong class="stat-value" id="pointsCount">0</strong></div>
+        <div class="stat-card s-lime"><span class="stat-label">🔥 Daily Streak</span><strong class="stat-value" id="streakCount">0 days</strong></div>
+        <div class="stat-card reward-card"><span class="stat-label">🎁 Daily reward</span><button type="button" class="btn btn-navy btn-sm" data-player="rewards">Claim now</button></div>
+      </section>
+      <p class="page-notice" id="pageNotice" role="alert" hidden></p>
     </div>
-</div>
-<nav>
-    <button onclick="showHome()">🏠 Home</button>
-    <button onclick="scrollToGames()">🎮 All Games</button>
-    <button onclick="scrollToFeatured()">⭐ Featured</button>
-    <button onclick="openPlayerModal('leaderboard')">🏆 Leaderboard</button>
-    <button onclick="openPlayerModal('friends')">👥 Friends</button>
-    <button onclick="openOwnerLogin()">👑 Owner Login</button>
-</nav>
 
-<main id="homePage">
+    <div class="container">
+      <section class="section" id="featuredSection" aria-labelledby="featuredTitle">
+        <div class="featured-band">
+          <div class="section-head">
+            <span class="section-eyebrow">⭐ Featured games</span>
+            <h2 class="section-title" id="featuredTitle">Owner's Picks</h2>
+            <p class="section-lead">Discover games selected by the owner.</p>
+          </div>
+          <ul class="featured-grid" id="featuredGames"></ul>
+          <p id="noFeatured" class="no-results"><strong>No featured games yet.</strong>Check back soon!</p>
+        </div>
+      </section>
 
-    <section class="hub-stats">
-        <div class="stat-card">
-            <span>🎮 Games Available</span>
-            <strong id="gamesCount">0</strong>
+      <section class="section" aria-labelledby="gamesHeading">
+        <div class="section-head">
+          <span class="section-eyebrow">All games</span>
+          <h2 class="section-title" id="gamesHeading">🎮 Explore All Games</h2>
         </div>
-        <div class="stat-card">
-            <span>🪙 Your Points</span>
-            <strong id="pointsCount">0</strong>
+        <div class="filter-bar">
+          <div class="filter-row" id="filterRow" role="group" aria-label="Filter games by tag"></div>
+          <p class="result-count" id="resultCount" role="status" aria-live="polite"></p>
         </div>
-        <div class="stat-card">
-            <span>🔥 Daily Streak</span>
-            <strong id="streakCount">0 days</strong>
-        </div>
+        <ul class="games-grid" id="gamesGrid"></ul>
+        <p class="no-results" id="noGames" role="status"><strong>No games found</strong>No games match your search.</p>
+      </section>
+    </div>
+  </div>
+
+  <section id="gamePlayer" hidden>
+    <div class="container">
+      <div class="player-head">
+        <h2 id="playingTitle">Playing game</h2>
+        <button type="button" class="btn btn-navy" id="backToHub">✕ Back to Hub</button>
+      </div>
+      <div class="frame-wrap">
+        <iframe id="gameFrame" title="Game player" allow="fullscreen; autoplay; gamepad" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <p class="player-help">If a game doesn't load here, use the button to open it in a new tab.</p>
+      <button type="button" class="btn btn-cyan" id="openNewTab">Open Game in New Tab ↗</button>
+    </div>
+  </section>
+
+  <div class="container">
+    <section id="ownerPanel" class="owner-panel" hidden aria-labelledby="ownerTitle">
+      <h2 id="ownerTitle">👑 Owner Dashboard</h2>
+      <p class="muted">Manage your collection and monitor game activity.</p>
+      <div class="btn-row">
+        <button type="button" class="btn btn-play btn-sm" id="addGameBtn">➕ Add Game</button>
+        <button type="button" class="btn btn-navy btn-sm" id="refreshAnalyticsBtn">📊 Refresh Analytics</button>
+        <button type="button" class="btn btn-danger btn-sm" id="ownerLogoutBtn">🚪 Log Out</button>
+      </div>
+
+      <h3>🏷️ Manage Tags</h3>
+      <p class="muted">Add your own reusable tags for games.</p>
+      <div class="tag-add">
+        <label for="newTag" class="sr-only">New tag name</label>
+        <input id="newTag" class="input" placeholder="New tag name" maxlength="32">
+        <button type="button" class="btn btn-cyan" id="addTagBtn">Add Tag</button>
+      </div>
+      <div id="tagManager" class="tag-row tag-manager"></div>
+
+      <h3>🎮 Your Games</h3>
+      <div id="ownerGames"></div>
+
+      <h3>📊 Game Analytics</h3>
+      <p class="muted">Recorded play-button clicks, grouped by game.</p>
+      <div id="ownerAnalytics"></div>
     </section>
 
-
-    <section class="search-area">
-        <input id="search" type="search"
-            placeholder="🔍 Search games, categories or tags..."
-            oninput="renderGames()">
+    <section class="suggest" id="suggestionBox">
+      <button type="button" class="suggest-trigger" id="suggestionTrigger" aria-expanded="false" aria-controls="suggestionForm">💡 Feel free to suggest your ideas.</button>
+      <form id="suggestionForm" class="suggest-form" action="https://formspree.io/f/xbglkyla" method="POST">
+        <h2>💌 Send a Suggestion</h2>
+        <div class="field"><label for="suggestionName">Your Name</label><input id="suggestionName" name="Name" maxlength="50" placeholder="Your name"></div>
+        <div class="field"><label for="suggestionContact">E-mail or Phone no.</label><input id="suggestionContact" name="E-mail or Phone no." maxlength="150" placeholder="Optional contact details"></div>
+        <div class="field"><label for="suggestionText">Your Suggestion</label><textarea id="suggestionText" name="Suggestion" maxlength="3000" required placeholder="Tell us your idea..."></textarea></div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-ghost" id="cancelSuggestion">Cancel</button>
+          <button type="submit" class="btn btn-play">Send Suggestion 🚀</button>
+        </div>
+        <p id="suggestionMessage" class="form-message" role="status" aria-live="polite"></p>
+      </form>
     </section>
-
-    <section class="featured" id="featuredSection">
-        <span class="featured-label">⭐ FEATURED GAMES</span>
-        <h2 class="section-heading">Owner's Picks</h2>
-        <p style="color:#bdcafa">
-            Discover games selected by the owner.
-        </p>
-        <div class="featured-grid" id="featuredGames"></div>
-        <p id="noFeatured" class="no-results">
-            No featured games yet.
-        </p>
-    </section>
-
-    <h2 class="section-heading" id="gamesHeading">🎮 Explore All Games</h2>
-
-    <section class="games" id="gamesGrid"></section>
-
-    <p class="no-results" id="noGames">
-        No games match your search.
-    </p>
-
+  </div>
 </main>
 
-<section id="gamePlayer">
-    <div class="player-header">
-        <h2 id="playingTitle">Playing game</h2>
-        <button class="back-button" onclick="closeGame()">✕ Back to Hub</button>
+<footer class="site-footer">
+  <div class="container">
+    <a class="brand" href="/games" data-route="games"><img src="icon-192.png" width="40" height="40" alt=""><span>Raghav's <b>Game Hub</b></span></a>
+    <div class="footer-links">
+      <button type="button" data-nav="home">Home</button>
+      <button type="button" data-nav="games">All Games</button>
+      <button type="button" data-nav="leaderboard">Leaderboard</button>
+      <button type="button" data-nav="friends">Friends</button>
     </div>
-    <iframe id="gameFrame" title="Game player"
-        allow="fullscreen; autoplay; gamepad"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allowfullscreen></iframe>
-    <p style="color:#bdcafa;margin-top:12px">
-        If a game doesn't load here, use the button to open it in a new tab.
-    </p>
-    <button class="owner-button" style="margin-top:12px"
-        onclick="openCurrentGame()">Open Game in New Tab ↗</button>
-</section>
+    <p>Built for gamers 🎮 Powered by code 🚀</p>
+    <p>© 2026 Raghav's Game Hub</p>
+  </div>
+</footer>
 
-<section id="ownerPanel" class="owner-panel" hidden>
-    <h2>👑 Owner Dashboard</h2>
-    <p style="color:#bdcafa;margin-bottom:20px">
-        Manage your collection and monitor game activity.
-    </p>
+<!-- Legacy rewards dialog (kept for compatibility; rewards now open in the player dialog). -->
+<div id="rewardsModal" class="modal-backdrop" aria-hidden="true">
+  <section class="modal-panel xl" role="dialog" aria-modal="true" aria-labelledby="rewardsHeading">
+    <div class="modal-head"><h2 id="rewardsHeading">🏆 Your Rewards</h2><button class="modal-close" type="button" data-close="rewardsModal" aria-label="Close rewards">✕</button></div>
+    <p id="rewardLevel">🎮 Rookie</p>
+    <p id="rewardDetails">Visit daily and play games to earn points.</p>
+    <p id="nextReward">Your next reward is waiting!</p>
+  </section>
+</div>
 
-    <div class="owner-actions">
-        <button class="owner-button" onclick="newGame()">➕ Add Game</button>
-        <button class="owner-button" onclick="loadOwnerAnalytics()">📊 Refresh Analytics</button>
-        <button class="danger-button" onclick="ownerLogout()">🚪 Log Out</button>
-    </div>
+<div id="playerModal" class="modal-backdrop" aria-hidden="true">
+  <section class="modal-panel wide" role="dialog" aria-modal="true" aria-labelledby="playerModalTitle">
+    <div class="modal-head"><h2 id="playerModalTitle">👤 Player</h2><button type="button" class="modal-close" data-close="playerModal" aria-label="Close">✕</button></div>
+    <div id="playerModalContent"><p class="muted">Loading player data…</p></div>
+    <p id="playerMessage" class="player-message" role="status" aria-live="polite"></p>
+  </section>
+</div>
 
-    <h3>🏷️ Manage Tags</h3>
-    <p style="color:#bdcafa;margin:10px 0">
-        Add your own reusable tags for games.
-    </p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-        <input id="newTag" placeholder="New tag name"
-            style="flex:1;min-width:180px;padding:12px;border-radius:10px">
-        <button class="owner-button" onclick="addTag()">Add Tag</button>
-    </div>
-    <div id="tagManager" class="tag-row"></div>
-
-    <h3 style="margin-top:28px">🎮 Your Games</h3>
-    <div id="ownerGames"></div>
-
-    <h3 style="margin-top:30px">📊 Game Analytics</h3>
-    <p style="color:#bdcafa;margin:10px 0">
-        Recorded play-button clicks, grouped by game.
-    </p>
-    <div id="ownerAnalytics"></div>
-</section>
-
-    <div id="rewardsModal" class="modal-backdrop" aria-hidden="true"
-         onclick="if(event.target === this) closeRewards()">
-        <section class="modal-panel rewards-modal-panel" role="dialog"
-                 aria-modal="true" aria-labelledby="rewardsHeading">
-            <div class="modal-heading-row">
-                <h2 id="rewardsHeading">🏆 Your Rewards</h2>
-                <button class="back-button modal-close" type="button"
-                        onclick="closeRewards()" aria-label="Close rewards">✕</button>
-            </div>
-            <p id="rewardLevel">🎮 Rookie</p>
-            <p id="rewardDetails">Visit daily and play games to earn points.</p>
-            <p id="nextReward">Your next reward is waiting!</p>
-            <button class="back-button rewards-close-button" type="button"
-                    onclick="closeRewards()">Close</button>
-        </section>
-    </div>
-
-
-<div id="playerModal" class="modal-backdrop" aria-hidden="true" onclick="if(event.target===this) closePlayerModal()">
-<section class="modal-panel player-modal" role="dialog" aria-modal="true" aria-labelledby="playerModalTitle">
-<div class="modal-heading-row"><h2 id="playerModalTitle">👤 Player</h2><button class="back-button modal-close" onclick="closePlayerModal()" aria-label="Close">✕</button></div>
-<div id="playerModalContent"><p class="player-muted">Loading player data…</p></div>
-<p id="playerMessage" class="player-message" aria-live="polite"></p>
-</section></div>
-
-<div id="ownerLoginModal" class="modal-backdrop" aria-hidden="true" onclick="if(event.target === this) closeOwnerLogin()">
-    <section class="modal-panel">
-        <h2>🔐 Owner Login</h2>
-        <form onsubmit="ownerLogin(event)">
-            <div class="field">
-                <label for="ownerEmail">Email</label>
-                <input id="ownerEmail" type="email" required autocomplete="username">
-            </div>
-            <div class="field">
-                <label for="ownerPassword">Password</label>
-                <input id="ownerPassword" type="password" required
-                    autocomplete="current-password">
-            </div>
-            <p id="loginMessage" class="form-message"></p>
-            <div class="owner-actions" style="margin-top:15px">
-                <button class="owner-button" type="submit">Log In</button>
-                <button class="back-button" type="button"
-                    onclick="closeOwnerLogin()">Cancel</button>
-            </div>
-        </form>
-    </section>
+<div id="ownerLoginModal" class="modal-backdrop" aria-hidden="true">
+  <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="ownerLoginTitle">
+    <div class="modal-head"><h2 id="ownerLoginTitle">🔐 Owner Login</h2><button type="button" class="modal-close" data-close="ownerLoginModal" aria-label="Close">✕</button></div>
+    <form id="ownerLoginForm">
+      <div class="field"><label for="ownerEmail">Email</label><input id="ownerEmail" type="email" required autocomplete="username"></div>
+      <div class="field"><label for="ownerPassword">Password</label><input id="ownerPassword" type="password" required autocomplete="current-password"></div>
+      <p id="loginMessage" class="form-message" role="status" aria-live="polite"></p>
+      <div class="btn-row">
+        <button class="btn btn-play" type="submit">Log In</button>
+        <button class="btn btn-ghost" type="button" data-close="ownerLoginModal">Cancel</button>
+      </div>
+    </form>
+  </section>
 </div>
 
 <div id="gameModal" class="modal-backdrop" aria-hidden="true">
-    <section class="modal-panel">
-        <h2 id="gameFormHeading">➕ Add Game</h2>
-        <form onsubmit="saveGame(event)">
-            <div class="field">
-                <label for="gameName">Game Name</label>
-                <input id="gameName" maxlength="100" required>
-            </div>
-            <div class="field">
-                <label for="gameDescription">Description</label>
-                <textarea id="gameDescription" maxlength="500"></textarea>
-            </div>
-            <div class="field">
-                <label for="gameUrl">Game URL</label>
-                <input id="gameUrl" type="url" required
-                    placeholder="https://your-game.example">
-            </div>
-            <div class="field">
-                <label for="gameIcon">Game Icon / Emoji</label>
-                <input id="gameIcon" maxlength="20" value="🎮">
-            </div>
-            <div class="field">
-                <label for="gameTags">Tags</label>
-                <input id="gameTags" placeholder="Arcade, Action, Puzzle">
-                <small>Separate tags with commas. You can also use tags created above.</small>
-            </div>
-            <div class="field">
-                <label for="gameFeatured">Featured?</label>
-                <select id="gameFeatured">
-                    <option value="false">No</option>
-                    <option value="true">Yes</option>
-                </select>
-            </div>
-            <p id="gameMessage" class="form-message"></p>
-            <div class="owner-actions" style="margin-top:15px">
-                <button class="owner-button" type="submit">💾 Save Game</button>
-                <button class="back-button" type="button"
-                    onclick="closeGameForm()">Cancel</button>
-            </div>
-        </form>
-    </section>
+  <section class="modal-panel xl" role="dialog" aria-modal="true" aria-labelledby="gameFormHeading">
+    <div class="modal-head"><h2 id="gameFormHeading">➕ Add Game</h2><button type="button" class="modal-close" data-close="gameModal" aria-label="Close">✕</button></div>
+    <form id="gameForm">
+      <div class="field"><label for="gameName">Game Name</label><input id="gameName" maxlength="100" required></div>
+      <div class="field"><label for="gameDescription">Description</label><textarea id="gameDescription" maxlength="500"></textarea></div>
+      <div class="field"><label for="gameUrl">Game URL</label><input id="gameUrl" type="url" required placeholder="https://your-game.example"></div>
+      <div class="field"><label for="gameIcon">Game Icon / Emoji</label><input id="gameIcon" maxlength="20" value="🎮"></div>
+      <div class="field"><label for="gameTags">Tags</label><input id="gameTags" placeholder="Arcade, Action, Puzzle"><small>Separate tags with commas. You can also use tags created above.</small></div>
+      <div class="field"><label for="gameFeatured">Featured?</label>
+        <select id="gameFeatured"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <p id="gameMessage" class="form-message" role="status" aria-live="polite"></p>
+      <div class="btn-row">
+        <button class="btn btn-play" type="submit">💾 Save Game</button>
+        <button class="btn btn-ghost" type="button" data-close="gameModal">Cancel</button>
+      </div>
+    </form>
+  </section>
 </div>
 
-<section class="suggestion-box" id="suggestionBox">
-    <button id="suggestionTrigger" onclick="toggleSuggestion()">
-        💡 Feel free to suggest your ideas.
-    </button>
+<noscript><p class="page-notice" style="margin:16px;">Game Hub needs JavaScript to sign you in and load games. Please enable JavaScript.</p></noscript>
 
-    <form id="suggestionForm"
-        action="https://formspree.io/f/xbglkyla"
-        method="POST">
-        <h2 style="margin-bottom:15px">💌 Send a Suggestion</h2>
-
-        <label for="suggestionName">Your Name</label>
-        <input class="suggestion-field" id="suggestionName"
-            name="Name" maxlength="50" placeholder="Your name">
-
-        <label for="suggestionContact">E-mail or Phone no.</label>
-        <input class="suggestion-field" id="suggestionContact"
-            name="E-mail or Phone no."
-            maxlength="150"
-            placeholder="Optional contact details">
-
-        <label for="suggestionText">Your Suggestion</label>
-        <textarea id="suggestionText" name="Suggestion"
-            maxlength="3000" required
-            placeholder="Tell us your idea..."></textarea>
-
-        <div class="suggestion-buttons">
-            <button type="button" id="cancelSuggestion"
-                onclick="toggleSuggestion()">Cancel</button>
-            <button type="submit">Send Suggestion 🚀</button>
-        </div>
-        <p id="suggestionMessage"></p>
-    </form>
-</section>
-
-<footer>
-    Built for gamers🎮 Powered by code🚀
-    <br><br>
-    © 2026 Raghav's Game Hub
-</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "https://wpdqxooopwivbzazonca.supabase.co";
-const SUPABASE_KEY = "sb_publishable_9wI9m5g9qLnjMtJzPGM5pA_KeJ36NWD";
-const OWNER_ID = "548419b4-f0c2-427d-9e4c-9b729e566f3b";
-
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let games = [];
-let editingGameId = null;
-let currentGame = null;
-let isOwner = false;
-
-const visitorKey = (() => {
-    let key = localStorage.getItem("gamehub_visitor_key");
-    if (!key) {
-        key = crypto.randomUUID();
-        localStorage.setItem("gamehub_visitor_key", key);
-    }
-    return key;
-})();
-
-const today = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-};
-
-function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, c => ({
-        "&":"&amp;", "<":"&lt;", ">":"&gt;",
-        '"':"&quot;", "'":"&#39;"
-    })[c]);
+/* Fallback CDN if the first one is blocked (same package, same major version). */
+if (!window.supabase) {
+  document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>');
 }
-
-function safeURL(value) {
-    try {
-        const u = new URL(value);
-        return ["https:", "http:"].includes(u.protocol) ? u.href : "";
-    } catch {
-        return "";
-    }
-}
-
-/* PLAYER ACCOUNT + CLOUD REWARDS */
-let playerUser = null;
-let playerProfile = null;
-let playerWallet = null;
-let playerStreak = null;
-let playerModalMode = "profile";
-
-function getRewards(){return {points:Number(playerWallet?.balance||0),streak:Number(playerStreak?.current_streak||0)};}
-function updateRewardUI(){
- const r=getRewards();
- document.getElementById("pointsCount").textContent=r.points;
- document.getElementById("streakCount").textContent=`${r.streak} days`;
- document.getElementById("rewardLevel").textContent=`⭐ Level ${playerProfile?.level||1}`;
- document.getElementById("rewardDetails").textContent=`${r.points} coins • ${r.streak}-day streak`;
- document.getElementById("nextReward").textContent="Claim your daily reward from My Profile → Rewards & Streak.";
-}
-function saveRewards(){updateRewardUI();}
-function awardDailyVisit(){updateRewardUI();}
-function awardGamePlay(){/* Game clicks are not trusted proof of completion; no coins are granted here. */}
-function toggleRewards(){openPlayerModal("rewards");}
-function openRewards(){openPlayerModal("rewards");}
-function closeRewards(){closePlayerModal();}
-
-function toggleProfileMenu(){
- const menu=document.getElementById("profileMenu");
- menu.classList.toggle("open");
-}
-document.addEventListener("click",e=>{
- const area=document.querySelector(".profile-area");
- if(area&&!area.contains(e.target)) document.getElementById("profileMenu")?.classList.remove("open");
-});
-async function loadPlayerData(){
- let authResult;
- try {
-  authResult = await db.auth.getUser();
- } catch (e) {
-  console.error("Supabase authentication request failed:", e);
-  const message = document.getElementById("playerMessage");
-  if (message) message.textContent = `Could not contact Supabase: ${e.message || e}. Check your internet connection and Supabase URL.`;
-  return false;
- }
- const user = authResult?.data?.user;
- const authError = authResult?.error;
- if (authError) {
-  // Do not redirect on network/auth-server errors: index.html could otherwise
-  // see the cached session and send the browser straight back here forever.
-  console.error("Supabase auth error:", authError);
-  const message = document.getElementById("playerMessage");
-  if (message) message.textContent = `Could not verify your login with Supabase: ${authError.message || "Unknown authentication error"}. Check your connection, then refresh.`;
-  return false;
- }
- if (!user) {
-  // No valid signed-in user: return to the login page. index.html also checks
-  // getUser(), so an expired cached session will not create a redirect loop.
-  location.replace("index.html");
-  return false;
- }
- playerUser=user;
- let results;
- try {
-  results = await Promise.all([
-   db.from("player_profiles").select("*").eq("user_id",user.id).maybeSingle(),
-   db.from("player_wallets").select("*").eq("user_id",user.id).maybeSingle(),
-   db.from("player_streaks").select("*").eq("user_id",user.id).maybeSingle()
-  ]);
- } catch (e) {
-  console.error("Player database request failed:", e);
-  const message = document.getElementById("playerMessage");
-  if (message) message.textContent = `Could not load player data: ${e.message || e}`;
-  return false;
- }
- const [p,w,s] = results;
- const dbError = p.error || w.error || s.error;
- if(dbError){
-  console.error("Player setup database error:", dbError);
-  const message = document.getElementById("playerMessage");
-  if (message) message.textContent = `Supabase database error: ${dbError.message || dbError.details || "Check table permissions and run the SQL setup."}`;
-  return false;
- }
- playerProfile=p.data;playerWallet=w.data;playerStreak=s.data;
- if(!playerProfile || !playerWallet || !playerStreak){
-  const missing = [!playerProfile && "player profile", !playerWallet && "wallet", !playerStreak && "streak record"].filter(Boolean).join(", ");
-  const message = document.getElementById("playerMessage");
-  if (message) message.textContent = `Your account is missing: ${missing}. Run the supplied repair SQL in Supabase, then refresh.`;
-  return false;
- }
- const trigger=document.getElementById("profileTrigger");
- if (trigger) trigger.textContent=`👤 ${playerProfile.display_name||"My Profile"} ▾`;
- updateRewardUI();return true;
-}
-async function claimDailyReward(){
- const {data,error}=await db.rpc("claim_daily_reward");
- if(error) throw error;
- await loadPlayerData();
- return data;
-}
-function openPlayerModal(mode){
- playerModalMode=mode;
- document.getElementById("profileMenu")?.classList.remove("open");
- const modal=document.getElementById("playerModal");
- modal.style.display="flex";modal.setAttribute("aria-hidden","false");
- document.body.classList.add("modal-open");
- renderPlayerModal();
-}
-function closePlayerModal(){
- const modal=document.getElementById("playerModal");modal.style.display="none";modal.setAttribute("aria-hidden","true");
- if(!["ownerLoginModal","gameModal","rewardsModal"].some(id=>document.getElementById(id)?.style.display==="flex"))document.body.classList.remove("modal-open");
-}
-async function renderPlayerModal(){
- const content=document.getElementById("playerModalContent"),message=document.getElementById("playerMessage");
- message.textContent="";content.innerHTML='<p class="player-muted">Loading…</p>';
- const ok=await loadPlayerData();if(!ok){content.innerHTML=`<p class="player-muted">${escapeHTML(message.textContent || "Player data could not be loaded. Check the browser console for details.")}</p>`;return;}
- const p=playerProfile,w=playerWallet,s=playerStreak;
- const title=document.getElementById("playerModalTitle");
- const badges=await db.from("player_badges_public").select("badge_name,emoji").eq("user_id",playerUser.id);
- const badgeHTML=(badges.data||[]).map(b=>`<span class="badge-chip">${escapeHTML(b.emoji)} ${escapeHTML(b.badge_name)}</span>`).join("")||'<span class="player-muted">No badges earned yet.</span>';
- if(playerModalMode==="profile"){
-  title.textContent="👤 Player Profile";
-  content.innerHTML=`<h3>${escapeHTML(p.display_name)}</h3><p class="player-muted">Player ID: <strong>${escapeHTML(p.player_id)}</strong></p><div class="player-grid"><div class="player-stat">🪙 Coins<strong>${w.balance}</strong></div><div class="player-stat">🔥 Streak<strong>${s.current_streak} days</strong></div><div class="player-stat">⭐ Level<strong>${p.level}</strong></div><div class="player-stat">✨ XP<strong>${p.xp}</strong></div></div><h3>🏅 Badges</h3>${badgeHTML}<div class="player-actions"><button onclick="openPlayerModal('settings')">Edit profile / Player ID</button></div>`;
- }else if(playerModalMode==="rewards"){
-  title.textContent="🪙 Rewards & Streak";
-  content.innerHTML=`<div class="player-grid"><div class="player-stat">Wallet<strong>${w.balance} coins</strong></div><div class="player-stat">Current streak<strong>${s.current_streak} days</strong></div><div class="player-stat">Best streak<strong>${s.longest_streak} days</strong></div><div class="player-stat">Next ID unlock<strong>${Math.max(0,5-s.current_streak)} days</strong></div></div><p class="player-muted">Daily login reward: 10 coins. A 5-day streak unlocks your first custom Player ID at no cost. Future changes cost 500 coins and are subject to the cooldown.</p><div class="player-actions"><button onclick="claimDailyFromUI()">🎁 Claim daily reward</button></div><h3>Recent coin activity</h3><ul class="player-list" id="coinHistory"><li>Loading transactions…</li></ul>`;
-  loadCoinHistory();
- }else if(playerModalMode==="settings"){
-  title.textContent="⚙️ Account Settings";
-  content.innerHTML=`<label>Display name</label><input id="editDisplayName" maxlength="30" value="${escapeHTML(p.display_name)}"><label>Choose custom Player ID</label><input id="customPlayerId" maxlength="18" placeholder="3–18 letters, numbers or underscores"><p class="player-muted">Your generated ID: ${escapeHTML(p.player_id)}. First custom ID is free after a 5-day streak; later changes cost 500 coins.</p><div class="player-actions"><button onclick="savePlayerSettings()">Save display name</button><button onclick="changeCustomPlayerId()">Set custom ID</button></div>`;
- }else if(playerModalMode==="friends"){
-  title.textContent="👥 Friends";
-  content.innerHTML=`
-   <p class="friends-intro">Connect with other players using their unique Player ID.</p>
-   <div class="friends-id-card"><div><small>Your Player ID · Share this with friends</small><strong>${escapeHTML(p.player_id)}</strong></div><button type="button" onclick="GenUICopyPlayerId()">Copy ID</button></div>
-   <div class="friend-search"><label for="friendLookupId">Find a player</label><div class="friend-search-row"><input id="friendLookupId" maxlength="24" placeholder="Enter your friend's Player ID"><button type="button" onclick="sendFriendRequest()">Send request</button></div></div>
-   <div class="friends-columns">
-    <section class="friends-section"><h3>📨 Friend requests</h3><ul class="player-list" id="friendRequests"><li class="friends-empty">Loading requests…</li></ul></section>
-    <section class="friends-section"><h3>👥 Your friends</h3><ul class="player-list" id="friendsList"><li class="friends-empty">Loading friends…</li></ul></section>
-   </div>`;
-  loadFriends();
- }else if(playerModalMode==="leaderboard"){
-  title.textContent="🏆 Leaderboards";
-  content.innerHTML=`<h3>🪙 Top coin collectors</h3><ul class="player-list" id="coinLeaders"><li>Loading…</li></ul><h3>🔥 Longest streaks</h3><ul class="player-list" id="streakLeaders"><li>Loading…</li></ul>`;
-  loadLeaderboards();
- }else if(playerModalMode==="achievements"){
-  title.textContent="🏅 Achievements";
-  content.innerHTML=`<p class="player-muted">Badges are earned through verified account activity.</p>${badgeHTML}<p>More achievements will unlock as you use Game Hub.</p>`;
- }
-}
-async function claimDailyFromUI(){
- const m=document.getElementById("playerMessage");
- try{const result=await claimDailyReward();m.textContent=result?.message||"Daily reward processed.";renderPlayerModal();}
- catch(e){m.textContent=e.message||"Could not claim today's reward.";}
-}
-async function loadCoinHistory(){
- const ul=document.getElementById("coinHistory");if(!ul)return;
- const {data,error}=await db.from("player_coin_transactions").select("amount,reason,created_at").order("created_at",{ascending:false}).limit(8);
- ul.innerHTML=error?'<li>Could not load history.</li>':(data||[]).map(x=>`<li><span>${escapeHTML(x.reason)}</span><strong>${x.amount>0?"+":""}${x.amount}</strong></li>`).join("")||'<li>No transactions yet.</li>';
-}
-async function savePlayerSettings(){
- const name=document.getElementById("editDisplayName").value.trim();if(name.length<2){document.getElementById("playerMessage").textContent="Display name must be at least 2 characters.";return;}
- const {error}=await db.from("player_profiles").update({display_name:name}).eq("user_id",playerUser.id);
- document.getElementById("playerMessage").textContent=error?error.message:"Display name updated.";
- await loadPlayerData();renderPlayerModal();
-}
-async function changeCustomPlayerId(){
- const input=document.getElementById("customPlayerId");
- const button=[...document.querySelectorAll("#playerModalContent button")].find(b=>b.textContent.includes("Set custom ID"));
- const message=document.getElementById("playerMessage");
- const id=input?.value.trim() || "";
- if(!id){message.textContent="Enter a custom Player ID first.";input?.focus();return;}
- if(button){button.disabled=true;button.textContent="Saving…";}
- message.textContent="Saving your custom Player ID…";
- try{
-  const {data,error}=await db.rpc("set_custom_player_id",{requested_id:id});
-  if(error) throw error;
-  await loadPlayerData();
-  const savedId=data?.player_id || id;
-  const note=document.querySelector("#playerModalContent .player-muted");
-  if(note) note.innerHTML=`Your Player ID is now: <strong>${escapeHTML(savedId)}</strong>. Your generated ID was ${escapeHTML(playerProfile?.player_id || "")}.`;
-  if(input) input.value="";
-  message.textContent=data?.message || "Custom Player ID updated successfully.";
- }catch(error){
-  message.textContent=error?.message || "Could not update your Player ID. Please try again.";
- }finally{
-  if(button){button.disabled=false;button.textContent="Set custom ID";}
- }
-}
-async function GenUICopyPlayerId(){
- const id=playerProfile?.player_id;
- if(!id)return;
- try{await navigator.clipboard.writeText(id);document.getElementById("playerMessage").textContent="Player ID copied! Share it with your friends.";}
- catch(error){document.getElementById("playerMessage").textContent="Copy was unavailable. Select and copy your Player ID manually.";}
-}
-async function sendFriendRequest(){
- const id=document.getElementById("friendLookupId").value.trim();
- const {data,error}=await db.rpc("send_player_friend_request",{target_player_id:id});
- document.getElementById("playerMessage").textContent=error?error.message:(data?.message||"Request sent.");
-}
-async function loadFriends(){
- const [requests,friends]=await Promise.all([
-  db.from("player_friend_requests").select("id,sender_id,created_at").eq("receiver_id",playerUser.id).eq("status","pending"),
-  db.from("player_friends_public").select("friend_id,display_name,player_id").eq("user_id",playerUser.id)
- ]);
- const req=document.getElementById("friendRequests"),fr=document.getElementById("friendsList");
- if(req)req.innerHTML=requests.error?'<li>Could not load requests.</li>':(requests.data||[]).map(x=>`<li>Player request <button onclick="answerFriendRequest('${x.id}',true)">Accept</button> <button onclick="answerFriendRequest('${x.id}',false)">Decline</button></li>`).join("")||'<li>No pending requests.</li>';
- if(fr)fr.innerHTML=friends.error?'<li>Could not load friends.</li>':(friends.data||[]).map(x=>`<li>${escapeHTML(x.display_name)} <small>${escapeHTML(x.player_id)}</small></li>`).join("")||'<li>No friends yet.</li>';
-}
-async function answerFriendRequest(id,accept){
- const {error}=await db.rpc("respond_player_friend_request",{request_id:id,accept_request:accept});
- document.getElementById("playerMessage").textContent=error?error.message:"Friend request updated.";loadFriends();
-}
-async function loadLeaderboards(){
- const [coins,streaks]=await Promise.all([
-  db.from("player_coin_leaderboard").select("display_name,player_id,balance,level").limit(10),
-  db.from("player_streak_leaderboard").select("display_name,player_id,current_streak").limit(10)
- ]);
- const c=document.getElementById("coinLeaders"),s=document.getElementById("streakLeaders");
- if(c)c.innerHTML=coins.error?'<li>Leaderboard unavailable.</li>':(coins.data||[]).map((x,i)=>`<li><span>#${i+1} ${escapeHTML(x.display_name)} <small>${escapeHTML(x.player_id)}</small></span><strong>${x.balance} 🪙</strong></li>`).join("")||'<li>No players yet.</li>';
- if(s)s.innerHTML=streaks.error?'<li>Leaderboard unavailable.</li>':(streaks.data||[]).map((x,i)=>`<li><span>#${i+1} ${escapeHTML(x.display_name)} <small>${escapeHTML(x.player_id)}</small></span><strong>${x.current_streak} 🔥</strong></li>`).join("")||'<li>No players yet.</li>';
-}
-async function playerSignOut(){
- try {
-  // Local scope clears this browser's Supabase session without depending on
-  // a successful network round-trip to the Auth server.
-  const {error} = await db.auth.signOut({scope:"local"});
-  if (error) console.error("Supabase sign-out warning:", error);
- } catch (error) {
-  console.error("Supabase sign-out failed:", error);
- } finally {
-  location.replace("index.html");
- }
-}
-
-/* ANALYTICS */
-
-async function recordEvent(type, game = null) {
-    try {
-        const {error} = await db.from("game_hub_events").insert({
-            event_type: type,
-            game_id: game?.id == null ? null : String(game.id),
-            game_name: game?.name || null,
-            name: playerProfile?.display_name || "Guest",
-            visitor_key: visitorKey
-        });
-        if (error) console.warn("Analytics event:", error.message);
-    } catch (e) {
-        console.warn("Analytics unavailable:", e);
-    }
-}
-
-/* LOAD AND DISPLAY GAMES */
-
-async function loadGames() {
-    const {data, error} = await db.from("games").select("*").order("id");
-    if (error) {
-        console.error(error);
-        document.getElementById("noGames").textContent =
-            "Couldn't load games. Check your Supabase table and permissions.";
-        document.getElementById("noGames").style.display = "block";
-        return;
-    }
-
-    games = data || [];
-    document.getElementById("gamesCount").textContent = games.length;
-    renderGames();
-    renderFeaturedGames();
-    renderOwnerGames();
-    renderTags();
-}
-
-function gameTags(game) {
-    if (Array.isArray(game.tags)) return game.tags.map(String);
-    if (typeof game.tags === "string") return game.tags.split(",").map(s=>s.trim()).filter(Boolean);
-    return [];
-}
-
-function isFeatured(game) {
-    return game.featured === true || game.featured === "true" ||
-           game.featured === 1 || game.featured === "1";
-}
-
-function makeCard(game, featured = false) {
-    const card = document.createElement("article");
-    card.className = featured ? "featured-item" : "game-card";
-
-    const icon = document.createElement("div");
-    icon.className = featured ? "featured-icon" : "game-icon";
-    icon.textContent = game.icon || "🎮";
-
-    // Use a heading element appropriate to the card type.
-    const heading = document.createElement(featured ? "h3" : "h2");
-    heading.textContent = game.name || "Untitled Game";
-
-    const desc = document.createElement("p");
-    desc.textContent = game.description || "Jump in and play!";
-
-    const tags = document.createElement("div");
-    tags.className = "tag-row";
-    gameTags(game).forEach(tag => {
-        const chip = document.createElement("span");
-        chip.className = "tag-chip";
-        chip.textContent = tag;
-        tags.appendChild(chip);
-    });
-
-    const btn = document.createElement("button");
-    btn.className = "play-button";
-    btn.textContent = featured ? "▶ PLAY FEATURED" : "▶ PLAY NOW";
-    btn.addEventListener("click", () => openGame(game));
-
-    card.append(icon, heading, desc, tags, btn);
-    return card;
-}
-
-function renderFeaturedGames() {
-    const host = document.getElementById("featuredGames");
-    host.replaceChildren();
-
-    const selected = games.filter(isFeatured);
-    document.getElementById("noFeatured").style.display =
-        selected.length ? "none" : "block";
-
-    selected.forEach(game => host.appendChild(makeCard(game, true)));
-}
-
-function renderGames() {
-    const host = document.getElementById("gamesGrid");
-    host.replaceChildren();
-
-    const q = document.getElementById("search").value.trim().toLowerCase();
-    const filtered = games.filter(game =>
-        [game.name, game.description, ...gameTags(game)]
-            .join(" ").toLowerCase().includes(q)
-    );
-
-    filtered.forEach(game => host.appendChild(makeCard(game)));
-    document.getElementById("noGames").style.display =
-        filtered.length ? "none" : "block";
-}
-
-function scrollToGames() {
-    document.getElementById("gamesHeading").scrollIntoView({behavior:"smooth"});
-}
-function scrollToFeatured() {
-    document.getElementById("featuredSection").scrollIntoView({behavior:"smooth"});
-}
-function showHome() {
-    document.getElementById("homePage").style.display = "block";
-    document.getElementById("gamePlayer").style.display = "none";
-    document.getElementById("homePage").scrollIntoView({behavior:"smooth"});
-}
-
-async function openGame(game) {
-    const url = safeURL(game.url);
-    if (!url) return alert("This game has an invalid URL.");
-
-    currentGame = game;
-    awardGamePlay(game);
-    await recordEvent("play", game);
-
-    document.getElementById("playingTitle").textContent = game.name;
-    document.getElementById("gameFrame").src = url;
-    document.getElementById("homePage").style.display = "none";
-    document.getElementById("gamePlayer").style.display = "block";
-    window.scrollTo({top:0, behavior:"smooth"});
-}
-
-function openCurrentGame() {
-    const url = safeURL(currentGame?.url);
-    if (url) window.open(url, "_blank", "noopener,noreferrer");
-}
-
-function closeGame() {
-    document.getElementById("gameFrame").src = "about:blank";
-    document.getElementById("gamePlayer").style.display = "none";
-    document.getElementById("homePage").style.display = "block";
-    currentGame = null;
-}
-
-/* OWNER AUTHENTICATION */
-
-function openOwnerLogin() {
-    const modal = document.getElementById("ownerLoginModal");
-    modal.style.display = "flex";
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-    document.getElementById("ownerEmail").focus();
-}
-function closeOwnerLogin() {
-    const modal = document.getElementById("ownerLoginModal");
-    modal.style.display = "none";
-    modal.setAttribute("aria-hidden", "true");
-    if (document.getElementById("rewardsModal").style.display !== "flex" &&
-        document.getElementById("gameModal").style.display !== "flex") {
-        document.body.classList.remove("modal-open");
-    }
-}
-
-async function ownerLogin(event) {
-    event.preventDefault();
-    const msg = document.getElementById("loginMessage");
-    msg.textContent = "Signing in...";
-
-    const {data, error} = await db.auth.signInWithPassword({
-        email: document.getElementById("ownerEmail").value.trim(),
-        password: document.getElementById("ownerPassword").value
-    });
-
-    if (error) {
-        msg.textContent = "Login failed: " + error.message;
-        return;
-    }
-
-    if (data.user.id !== OWNER_ID) {
-        await db.auth.signOut();
-        msg.textContent = "This account is not authorized as the owner.";
-        return;
-    }
-
-    // Explicitly enable owner mode for this tab after successful owner login.
-    sessionStorage.removeItem("gamehub_owner_mode_logged_out");
-    isOwner = true;
-    closeOwnerLogin();
-    document.getElementById("ownerPanel").hidden = false;
-    await loadOwnerAnalytics();
-    renderOwnerGames();
-    document.getElementById("ownerPanel").scrollIntoView({behavior:"smooth"});
-}
-
-async function ownerLogout() {
-    // Owner mode is separate from the player's Supabase login.
-    // Hide the dashboard without signing out the player account.
-    isOwner = false;
-    sessionStorage.setItem("gamehub_owner_mode_logged_out", "true");
-    document.getElementById("ownerPanel").hidden = true;
-    const analytics = document.getElementById("ownerAnalytics");
-    if (analytics) analytics.replaceChildren();
-    const ownerGames = document.getElementById("ownerGames");
-    if (ownerGames) ownerGames.replaceChildren();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-async function checkSession() {
-    const {data, error} = await db.auth.getUser();
-    const ownerModeWasClosed = sessionStorage.getItem("gamehub_owner_mode_logged_out") === "true";
-    const isOwnerAccount = !error && data.user?.id === OWNER_ID;
-
-    isOwner = Boolean(isOwnerAccount && !ownerModeWasClosed);
-    document.getElementById("ownerPanel").hidden = !isOwner;
-
-    // Games are loaded before the owner session check during startup.
-    // Render the owner list here as well, so an automatically recognised
-    // owner sees the existing games without needing to log in again.
-    if (isOwner) {
-        renderOwnerGames();
-        await loadOwnerAnalytics();
-    }
-}
-
-/* OWNER GAME MANAGEMENT */
-
-function renderOwnerGames() {
-    const host = document.getElementById("ownerGames");
-    if (!host) return;
-    host.replaceChildren();
-
-    if (!isOwner) return;
-
-    games.forEach(game => {
-        const row = document.createElement("div");
-        row.className = "owner-game";
-
-        const info = document.createElement("div");
-        info.innerHTML =
-            `<strong>${escapeHTML(game.icon || "🎮")} ${escapeHTML(game.name)}</strong>
-             <br><small>${isFeatured(game) ? "⭐ Featured" : "Not featured"} ·
-             ${gameTags(game).map(escapeHTML).join(", ")}</small>`;
-
-        const actions = document.createElement("div");
-        actions.className = "owner-game-actions";
-
-        const edit = document.createElement("button");
-        edit.className = "edit-button";
-        edit.textContent = "✏️ Edit";
-        edit.onclick = () => editGame(game);
-
-        const del = document.createElement("button");
-        del.className = "danger-button";
-        del.textContent = "🗑️ Delete";
-        del.onclick = () => deleteGame(game);
-
-        actions.append(edit, del);
-        row.append(info, actions);
-        host.appendChild(row);
-    });
-}
-
-function newGame() {
-    editingGameId = null;
-    document.getElementById("gameFormHeading").textContent = "➕ Add Game";
-    document.getElementById("gameName").value = "";
-    document.getElementById("gameDescription").value = "";
-    document.getElementById("gameUrl").value = "";
-    document.getElementById("gameIcon").value = "🎮";
-    document.getElementById("gameTags").value = "";
-    document.getElementById("gameFeatured").value = "false";
-    document.getElementById("gameMessage").textContent = "";
-    document.getElementById("gameModal").style.display = "flex";
-}
-
-function editGame(game) {
-    editingGameId = game.id;
-    document.getElementById("gameFormHeading").textContent = "✏️ Edit Game";
-    document.getElementById("gameName").value = game.name || "";
-    document.getElementById("gameDescription").value = game.description || "";
-    document.getElementById("gameUrl").value = game.url || "";
-    document.getElementById("gameIcon").value = game.icon || "🎮";
-    document.getElementById("gameTags").value = gameTags(game).join(", ");
-    document.getElementById("gameFeatured").value = String(isFeatured(game));
-    document.getElementById("gameMessage").textContent = "";
-    document.getElementById("gameModal").style.display = "flex";
-}
-
-function closeGameForm() {
-    document.getElementById("gameModal").style.display = "none";
-}
-
-async function saveGame(event) {
-    event.preventDefault();
-
-    if (!isOwner) return alert("Please log in as the owner first.");
-
-    const {data: auth} = await db.auth.getUser();
-    if (auth.user?.id !== OWNER_ID) {
-        isOwner = false;
-        return alert("Owner authentication required.");
-    }
-
-    const name = document.getElementById("gameName").value.trim();
-    const description = document.getElementById("gameDescription").value.trim();
-    const url = safeURL(document.getElementById("gameUrl").value.trim());
-    const icon = document.getElementById("gameIcon").value.trim() || "🎮";
-    const tags = [...new Set(
-        document.getElementById("gameTags").value
-        .split(",").map(s=>s.trim()).filter(Boolean)
-    )].slice(0,12);
-    const featured = document.getElementById("gameFeatured").value === "true";
-    const message = document.getElementById("gameMessage");
-
-    if (!name || !url) {
-        message.textContent = "Please enter a valid game name and URL.";
-        return;
-    }
-
-    const payload = {name, description, url, icon, tags, featured};
-
-    message.textContent = "Saving...";
-
-    let result;
-    if (editingGameId === null) {
-        result = await db.from("games").insert({
-            ...payload, owner_id: OWNER_ID
-        });
-    } else {
-        result = await db.from("games").update(payload).eq("id", editingGameId);
-    }
-
-    if (result.error) {
-        message.textContent = "Save failed: " + result.error.message;
-        return;
-    }
-
-    closeGameForm();
-    await loadGames();
-    alert("Game saved successfully!");
-}
-
-async function deleteGame(game) {
-    if (!isOwner) return;
-    if (!confirm(`Delete "${game.name}"? This cannot be undone.`)) return;
-
-    const {data: auth} = await db.auth.getUser();
-    if (auth.user?.id !== OWNER_ID) return alert("Owner authentication required.");
-
-    const {error} = await db.from("games").delete().eq("id", game.id);
-    if (error) return alert("Delete failed: " + error.message);
-
-    await loadGames();
-}
-
-/* CUSTOM TAGS */
-
-function getSavedTags() {
-    try {
-        return JSON.parse(localStorage.getItem("gamehub_custom_tags")) || [];
-    } catch {
-        return [];
-    }
-}
-
-function renderTags() {
-    const host = document.getElementById("tagManager");
-    if (!host) return;
-    host.replaceChildren();
-
-    getSavedTags().forEach(tag => {
-        const chip = document.createElement("span");
-        chip.className = "tag-chip";
-        chip.textContent = tag + " ×";
-        chip.title = "Click to remove this tag";
-        chip.style.cursor = "pointer";
-        chip.onclick = () => {
-            if (!isOwner) return;
-            localStorage.setItem("gamehub_custom_tags",
-                JSON.stringify(getSavedTags().filter(t => t !== tag)));
-            renderTags();
-        };
-        host.appendChild(chip);
-    });
-}
-
-function addTag() {
-    if (!isOwner) return alert("Owner login required.");
-
-    const input = document.getElementById("newTag");
-    const tag = input.value.trim().slice(0,32);
-    if (!tag) return;
-
-    const tags = getSavedTags();
-    if (!tags.some(t => t.toLowerCase() === tag.toLowerCase())) {
-        tags.push(tag);
-        localStorage.setItem("gamehub_custom_tags", JSON.stringify(tags));
-    }
-
-    input.value = "";
-    renderTags();
-}
-
-/* OWNER ANALYTICS */
-
-async function loadOwnerAnalytics() {
-    if (!isOwner) return;
-
-    const host = document.getElementById("ownerAnalytics");
-    host.textContent = "Loading analytics...";
-
-    const {data: auth} = await db.auth.getUser();
-    if (auth.user?.id !== OWNER_ID) {
-        host.textContent = "Owner authentication required.";
-        return;
-    }
-
-    const {data, error} = await db.from("game_hub_events")
-        .select("game_id,game_name,visitor_key,event_type,name")
-        .eq("event_type", "play");
-
-    if (error) {
-        host.textContent =
-            "Analytics unavailable. Check the game_hub_events table and its permissions.";
-        console.error(error);
-        return;
-    }
-
-    const totals = {};
-    (data || []).forEach(e => {
-        const key = e.game_id || e.game_name || "unknown";
-        if (!totals[key]) totals[key] = {
-            name: e.game_name || "Unknown game", plays: 0, visitors: new Set(), players: new Set()
-        };
-        totals[key].plays++;
-        if (e.visitor_key) totals[key].visitors.add(e.visitor_key);
-        if (e.name) totals[key].players.add(e.name);
-    });
-
-    host.replaceChildren();
-
-    const rows = Object.values(totals).sort((a,b)=>b.plays-a.plays);
-    if (!rows.length) {
-        host.textContent = "No game plays have been recorded yet.";
-        return;
-    }
-
-    rows.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "owner-game";
-        const info = document.createElement("div");
-        info.innerHTML = `<strong>${escapeHTML(item.name)}</strong>
-            <br><small>${item.plays} play clicks · ${item.visitors.size} browsers</small>
-            <br><small>Players: ${escapeHTML([...item.players].join(", ") || "Unknown")}</small>`;
-        row.appendChild(info);
-        host.appendChild(row);
-    });
-}
-
-/* SUGGESTIONS */
-
-function toggleSuggestion() {
-    document.getElementById("suggestionBox").classList.toggle("open");
-}
-
-document.getElementById("suggestionForm").addEventListener("submit", async event => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const msg = document.getElementById("suggestionMessage");
-    msg.textContent = "Sending...";
-
-    try {
-        const response = await fetch(form.action, {
-            method: "POST",
-            body: new FormData(form),
-            headers: {Accept:"application/json"}
-        });
-
-        if (!response.ok) throw new Error("Submission failed");
-        msg.textContent = "✅ Thank you! Your suggestion was sent.";
-        msg.style.color = "#86efac";
-        form.reset();
-        setTimeout(() => {
-            document.getElementById("suggestionBox").classList.remove("open");
-            msg.textContent = "";
-        }, 5000);
-    } catch {
-        msg.textContent = "❌ Couldn't send it. Please try again.";
-        msg.style.color = "#fca5a5";
-    }
-});
-
-/* MODAL ACCESSIBILITY AND DISMISSAL */
-
-["ownerLoginModal", "gameModal"].forEach(id => {
-    const backdrop = document.getElementById(id);
-    backdrop.addEventListener("click", event => {
-        if (event.target !== backdrop) return;
-        if (id === "ownerLoginModal") closeOwnerLogin();
-        else closeGameForm();
-    });
-});
-
-document.addEventListener("keydown", event => {
-    if (event.key !== "Escape") return;
-    if (document.getElementById("rewardsModal").style.display === "flex") closeRewards();
-    if (document.getElementById("ownerLoginModal").style.display === "flex") closeOwnerLogin();
-    if (document.getElementById("gameModal").style.display === "flex") closeGameForm();
-});
-
-/* STARTUP */
-
-async function init() {
-    const playerReady = await loadPlayerData();
-    if (!playerReady) return;
-    updateRewardUI();
-    await loadGames();
-    await checkSession();
-    await recordEvent("visit");
-}
-
-init();
 </script>
+<script src="js/hub.js"></script>
 </body>
 </html>
