@@ -400,10 +400,22 @@ function answerFriendRequest(id, accept) {
 }
 function loadLeaderboards() {
     Promise.all([
-        db.from("player_coin_leaderboard").select("display_name,player_id,balance,level").order("balance", { ascending: false }).order("display_name", { ascending: true }).limit(10),
-        db.from("player_streak_leaderboard").select("display_name,player_id,current_streak").order("current_streak", { ascending: false }).order("display_name", { ascending: true }).limit(10)
+        db.from("player_coin_leaderboard").select("display_name,player_id,balance,level").order("balance", { ascending: false }).order("display_name", { ascending: true }).limit(500),
+        db.from("player_streak_leaderboard").select("display_name,player_id,current_streak").order("current_streak", { ascending: false }).order("display_name", { ascending: true }).limit(500)
     ]).then(function (res) {
         var coins = res[0], streaks = res[1];
+        /* One row per player name: rows arrive best-first, so the first one seen is that name's best. */
+        function bestPerName(rows) {
+            var seen = {}, out = [];
+            (rows || []).forEach(function (r) {
+                var k = String(r.display_name || "").trim().toLowerCase();
+                if (seen[k]) return;
+                seen[k] = true; out.push(r);
+            });
+            return out.slice(0, 10);
+        }
+        if (!coins.error) coins = { data: bestPerName(coins.data) };
+        if (!streaks.error) streaks = { data: bestPerName(streaks.data) };
         var medals = ["🥇", "🥈", "🥉"];
         function rank(i) { return '<span class="rank">' + (medals[i] || ("#" + (i + 1))) + "</span>"; }
         var c = $("coinLeaders"), s = $("streakLeaders");
