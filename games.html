@@ -32,7 +32,7 @@
       </nav>
 
       <div class="header-actions">
-        <button type="button" class="coin-chip" id="coinChip" data-nav="rewards" aria-label="Your coins. Open rewards">🪙 <span id="coinChipValue">0</span></button>
+        <button type="button" class="coin-chip" id="coinChip" data-nav="rewards" aria-label="Your coins. Open rewards">💰 <span id="coinChipValue">0</span></button>
         <div class="profile-wrap">
           <button type="button" class="profile-trigger" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu">
             <span aria-hidden="true">👤</span><span class="pt-name" id="profileName">My Profile</span><span class="pt-caret" aria-hidden="true">▾</span>
@@ -40,7 +40,7 @@
           </button>
           <div class="profile-menu" id="profileMenu">
             <button type="button" data-player="profile">👤 Profile</button>
-            <button type="button" data-player="rewards">🪙 Rewards &amp; Streak</button>
+            <button type="button" data-player="rewards">💰 Rewards &amp; Streak</button>
             <button type="button" data-player="achievements">🏅 Achievements</button>
             <button type="button" data-player="settings">⚙️ Account Settings</button>
             <button type="button" class="is-signout" data-nav="signout">🚪 Sign Out</button>
@@ -74,11 +74,12 @@
     <div class="container stats-wrap">
       <section class="stats" aria-label="Your Game Hub stats">
         <div class="stat-card"><span class="stat-label">🎮 Games Available</span><strong class="stat-value" id="gamesCount">0</strong></div>
-        <div class="stat-card s-cyan"><span class="stat-label">🪙 Your Points</span><strong class="stat-value" id="pointsCount">0</strong></div>
+        <div class="stat-card s-cyan"><span class="stat-label">💰 Your Points</span><strong class="stat-value" id="pointsCount">0</strong></div>
         <div class="stat-card s-lime"><span class="stat-label">🔥 Daily Streak</span><strong class="stat-value" id="streakCount">0 days</strong></div>
         <div class="stat-card reward-card"><span class="stat-label">🎁 Daily reward</span><button type="button" class="btn btn-navy btn-sm" data-player="rewards">Claim now</button></div>
       </section>
       <p class="page-notice" id="pageNotice" role="alert" hidden></p>
+      <p class="reward-toast" id="rewardToast" role="status" hidden></p>
     </div>
 
     <div class="container">

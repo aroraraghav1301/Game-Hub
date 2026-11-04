@@ -237,6 +237,8 @@ body.modal-open { overflow: hidden; }
     margin: 16px 0 0; padding: 14px 18px; border-radius: 16px; background: #fff1f0; border: 2px solid #ff5a5f; color: #7a1014; font-weight: 600;
 }
 
+.reward-toast { margin: 16px 0 0; padding: 14px 18px; border-radius: 16px; background: #ecf9d9; border: 2px solid #74c80d; color: #25480a; font-weight: 700; }
+
 .section { padding: 40px 0 8px; }
 .section-head { margin-bottom: 22px; }
 .section-eyebrow {

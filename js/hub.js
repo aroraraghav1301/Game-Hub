@@ -197,6 +197,31 @@ function playerSignOut() {
     } catch (e) { console.error("Supabase sign-out failed:", e); done(); }
 }
 
+/* Daily login streak: claim automatically once per day when the hub opens.
+   Uses the same claim_daily_reward() RPC as the button; the database decides
+   whether today's reward was already taken, so this cannot double-pay. */
+function localDay() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+function autoClaimDaily() {
+    if (!playerUser) return;
+    var flag = "gamehub_autoclaim_" + playerUser.id;
+    if (store("local", flag) === localDay()) return;
+    db.rpc("claim_daily_reward").then(function (res) {
+        if (res.error) { console.warn("Daily reward:", res.error.message); return; }
+        store("local", flag, localDay());
+        if (res.data && res.data.claimed) {
+            var toast = $("rewardToast");
+            if (toast) {
+                toast.textContent = "🎁 Daily reward claimed: +" + res.data.coins + " coins! Streak: " + res.data.streak + " day" + (res.data.streak === 1 ? "" : "s") + " 🔥";
+                toast.hidden = false;
+            }
+            return loadPlayerData();
+        }
+    }, function (e) { console.warn("Daily reward unavailable:", e); });
+}
+
 /* ---------- Player modal ---------- */
 function openPlayerModal(mode) {
     playerModalMode = mode;
@@ -228,14 +253,14 @@ function renderPlayerModal() {
                 content.innerHTML =
                     '<div class="player-hero"><div class="avatar" aria-hidden="true">' + initial + '</div><div><h3>' + escapeHTML(p.display_name) +
                     '</h3><p class="muted">Player ID: <strong>' + escapeHTML(p.player_id) + '</strong></p></div></div>' +
-                    '<div class="player-grid"><div class="player-stat">🪙 Coins<strong>' + w.balance + '</strong></div>' +
+                    '<div class="player-grid"><div class="player-stat">💰 Coins<strong>' + w.balance + '</strong></div>' +
                     '<div class="player-stat">🔥 Streak<strong>' + s.current_streak + ' days</strong></div>' +
                     '<div class="player-stat">⭐ Level<strong>' + p.level + '</strong></div>' +
                     '<div class="player-stat">✨ XP<strong>' + p.xp + '</strong></div></div>' +
                     '<h3 class="sub-title">🏅 Badges</h3>' + badgeHTML +
                     '<div class="btn-row" style="margin-top:14px"><button type="button" class="btn btn-navy btn-sm" data-player="settings">Edit profile / Player ID</button></div>';
             } else if (playerModalMode === "rewards") {
-                title.textContent = "🪙 Rewards & Streak";
+                title.textContent = "💰 Rewards & Streak";
                 content.innerHTML =
                     '<div class="player-grid"><div class="player-stat">Wallet<strong>' + w.balance + ' coins</strong></div>' +
                     '<div class="player-stat">Current streak<strong>' + s.current_streak + ' days</strong></div>' +
@@ -268,7 +293,7 @@ function renderPlayerModal() {
             } else if (playerModalMode === "leaderboard") {
                 title.textContent = "🏆 Leaderboards";
                 content.innerHTML =
-                    '<h3 class="sub-title">🪙 Top coin collectors</h3><ul class="player-list" id="coinLeaders"><li>Loading…</li></ul>' +
+                    '<h3 class="sub-title">💰 Top coin collectors</h3><ul class="player-list" id="coinLeaders"><li>Loading…</li></ul>' +
                     '<h3 class="sub-title">🔥 Longest streaks</h3><ul class="player-list" id="streakLeaders"><li>Loading…</li></ul>';
                 loadLeaderboards();
             } else if (playerModalMode === "achievements") {
@@ -375,15 +400,15 @@ function answerFriendRequest(id, accept) {
 }
 function loadLeaderboards() {
     Promise.all([
-        db.from("player_coin_leaderboard").select("display_name,player_id,balance,level").limit(10),
-        db.from("player_streak_leaderboard").select("display_name,player_id,current_streak").limit(10)
+        db.from("player_coin_leaderboard").select("display_name,player_id,balance,level").order("balance", { ascending: false }).order("display_name", { ascending: true }).limit(10),
+        db.from("player_streak_leaderboard").select("display_name,player_id,current_streak").order("current_streak", { ascending: false }).order("display_name", { ascending: true }).limit(10)
     ]).then(function (res) {
         var coins = res[0], streaks = res[1];
         var medals = ["🥇", "🥈", "🥉"];
         function rank(i) { return '<span class="rank">' + (medals[i] || ("#" + (i + 1))) + "</span>"; }
         var c = $("coinLeaders"), s = $("streakLeaders");
         if (c) c.innerHTML = coins.error ? "<li>Leaderboard unavailable.</li>" : ((coins.data || []).map(function (x, i) {
-            return "<li><span>" + rank(i) + escapeHTML(x.display_name) + " <small>" + escapeHTML(x.player_id) + "</small></span><strong>" + x.balance + " 🪙</strong></li>";
+            return "<li><span>" + rank(i) + escapeHTML(x.display_name) + " <small>" + escapeHTML(x.player_id) + "</small></span><strong>" + x.balance + " 💰</strong></li>";
         }).join("") || "<li>No players yet.</li>");
         if (s) s.innerHTML = streaks.error ? "<li>Leaderboard unavailable.</li>" : ((streaks.data || []).map(function (x, i) {
             return "<li><span>" + rank(i) + escapeHTML(x.display_name) + " <small>" + escapeHTML(x.player_id) + "</small></span><strong>" + x.current_streak + " 🔥</strong></li>";
@@ -894,7 +919,7 @@ function init() {
     loadPlayerData().then(function (state) {
         if (state === "redirect") return;
         return loadGames().then(checkSession).then(function () {
-            if (state === "ok") return recordEvent("visit");
+            if (state === "ok") { autoClaimDaily(); return recordEvent("visit"); }
         });
     }).then(null, function (e) { console.error(e); showNotice("Something went wrong while loading Game Hub: " + (e && e.message ? e.message : e)); });
 }
